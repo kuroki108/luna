@@ -24,19 +24,19 @@ class SupportPanelView(discord.ui.View):
             )
         except TicketLimitReached:
             await interaction.followup.send(
-                "❌ Du hast bereits zu viele offene Tickets. Bitte warte, bis diese bearbeitet wurden.",
+                "Du hast bereits zu viele offene Tickets. Bitte warte, bis diese bearbeitet wurden.",
                 ephemeral=True,
             )
             return
 
-        embed = embed_builder.ticket_welcome(interaction.user, ticket_type)
+        embed = embed_builder.welcome_for(interaction.user, ticket_type)
         await channel.send(
             content=ticket_manager.opening_mentions(interaction.user, ticket_type),
             embed=embed,
             view=TicketControlView(),
         )
         await channel.send(embed=embed_builder.ticket_info(ticket_type))
-        await interaction.followup.send(f"✅ Dein Ticket wurde erstellt: {channel.mention}", ephemeral=True)
+        await interaction.followup.send(f"Dein Ticket wurde erstellt: {channel.mention}", ephemeral=True)
 
     @discord.ui.button(
         label="Report",
@@ -94,16 +94,16 @@ class _AddUserSelectView(discord.ui.View):
         target = select.values[0]
         ticket = await store.get_ticket(self.ticket_channel_id)
         if not ticket:
-            await interaction.response.edit_message(content="❌ Ticket wurde nicht gefunden.", view=None)
+            await interaction.response.edit_message(content="Ticket wurde nicht gefunden.", view=None)
             return
         ok = await ticket_manager.add_user(interaction.channel, target, ticket)
         if not ok:
             await interaction.response.edit_message(
-                content=f"⚠️ {target.mention} ist bereits im Ticket oder ist der Ersteller.", view=None
+                content=f"{target.mention} ist bereits im Ticket oder ist der Ersteller.", view=None
             )
             return
-        await interaction.response.edit_message(content=f"✅ {target.mention} wurde hinzugefügt.", view=None)
-        await interaction.channel.send(f"➕ {target.mention} wurde von {interaction.user.mention} zum Ticket hinzugefügt.")
+        await interaction.response.edit_message(content=f"{target.mention} wurde hinzugefügt.", view=None)
+        await interaction.channel.send(f"{target.mention} wurde von {interaction.user.mention} zum Ticket hinzugefügt.")
 
 
 class ConfirmDeleteView(discord.ui.View):
@@ -115,11 +115,11 @@ class ConfirmDeleteView(discord.ui.View):
     @discord.ui.button(label="Ja, endgültig löschen", style=discord.ButtonStyle.secondary)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if self.requester_id is not None and interaction.user.id != self.requester_id:
-            await interaction.response.send_message("❌ Nur der Nutzer, der die Löschung angefordert hat, kann bestätigen.", ephemeral=True)
+            await interaction.response.send_message("Nur der Nutzer, der die Löschung angefordert hat, kann bestätigen.", ephemeral=True)
             return
         ticket = await store.get_ticket(self.ticket_channel_id)
         if not ticket:
-            await interaction.response.edit_message(content="❌ Ticket wurde nicht gefunden.", view=None)
+            await interaction.response.edit_message(content="Ticket wurde nicht gefunden.", view=None)
             return
         await interaction.response.edit_message(content="🗑️ Ticket wird gelöscht...", view=None)
         await ticket_manager.delete_ticket(interaction.channel, interaction.user, ticket)
@@ -127,7 +127,7 @@ class ConfirmDeleteView(discord.ui.View):
     @discord.ui.button(label="Abbrechen", style=discord.ButtonStyle.secondary)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if self.requester_id is not None and interaction.user.id != self.requester_id:
-            await interaction.response.send_message("❌ Nur der Nutzer, der die Löschung angefordert hat, kann abbrechen.", ephemeral=True)
+            await interaction.response.send_message("Nur der Nutzer, der die Löschung angefordert hat, kann abbrechen.", ephemeral=True)
             return
         await interaction.response.edit_message(content="Abgebrochen.", view=None)
 
@@ -145,7 +145,7 @@ class TicketControlView(discord.ui.View):
     async def _get_ticket_or_warn(self, interaction: discord.Interaction):
         ticket = await store.get_ticket(interaction.channel.id)
         if not ticket:
-            await interaction.response.send_message("❌ Dies ist kein aktiver Ticket-Kanal.", ephemeral=True)
+            await interaction.response.send_message("Dies ist kein aktiver Ticket-Kanal.", ephemeral=True)
             return None
         return ticket
 
@@ -155,7 +155,7 @@ class TicketControlView(discord.ui.View):
         if not ticket:
             return
         if not permissions.is_staff_for_ticket_type(interaction.user, ticket.type):
-            await interaction.response.send_message("❌ Nur Teammitglieder können Nutzer hinzufügen.", ephemeral=True)
+            await interaction.response.send_message("Nur Teammitglieder können Nutzer hinzufügen.", ephemeral=True)
             return
         await interaction.response.send_message(
             "Wähle den Nutzer aus, der hinzugefügt werden soll:", view=_AddUserSelectView(interaction.channel.id), ephemeral=True
@@ -167,10 +167,10 @@ class TicketControlView(discord.ui.View):
         if not ticket:
             return
         if not permissions.is_staff_for_ticket_type(interaction.user, ticket.type):
-            await interaction.response.send_message("❌ Nur Teammitglieder können Tickets löschen.", ephemeral=True)
+            await interaction.response.send_message("Nur Teammitglieder können Tickets löschen.", ephemeral=True)
             return
         await interaction.response.send_message(
-            "⚠️ Bist du sicher? Das Ticket wird gelöscht; das Transcript bleibt im Log-Kanal erhalten.",
+            "Bist du sicher? Das Ticket wird gelöscht; das Transcript bleibt im Log-Kanal erhalten.",
             view=ConfirmDeleteView(interaction.channel.id, interaction.user.id),
             ephemeral=True,
         )
