@@ -30,18 +30,13 @@ class SupportPanelView(discord.ui.View):
             return
 
         embed = embed_builder.ticket_welcome(interaction.user, ticket_type)
-        await channel.send(content=interaction.user.mention, embed=embed, view=TicketControlView())
+        await channel.send(
+            content=ticket_manager.opening_mentions(interaction.user, ticket_type),
+            embed=embed,
+            view=TicketControlView(),
+        )
         await channel.send(embed=embed_builder.ticket_info(ticket_type))
         await interaction.followup.send(f"✅ Dein Ticket wurde erstellt: {channel.mention}", ephemeral=True)
-
-    @discord.ui.button(
-        label="Support",
-        emoji=config.EMOJI_OPEN_TICKET,
-        style=discord.ButtonStyle.secondary,
-        custom_id="za_open_support",
-    )
-    async def open_support(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
-        await self._open(interaction, "support")
 
     @discord.ui.button(
         label="Report",
@@ -51,6 +46,15 @@ class SupportPanelView(discord.ui.View):
     )
     async def open_report(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await self._open(interaction, "support_report")
+
+    @discord.ui.button(
+        label="Support",
+        emoji=config.EMOJI_OPEN_TICKET,
+        style=discord.ButtonStyle.secondary,
+        custom_id="za_open_support",
+    )
+    async def open_support(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        await self._open(interaction, "support")
 
     @discord.ui.button(
         label="Admin",

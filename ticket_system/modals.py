@@ -25,7 +25,11 @@ async def _finish_application(interaction: discord.Interaction, ticket_type: str
         return
 
     embed = embed_builder.application_ticket(interaction.user, ticket_type, answers)
-    await channel.send(content=interaction.user.mention, embed=embed, view=TicketControlView(show_add_user=False))
+    await channel.send(
+        content=ticket_manager.opening_mentions(interaction.user, ticket_type),
+        embed=embed,
+        view=TicketControlView(show_add_user=False),
+    )
     await channel.send(embed=embed_builder.ticket_info(ticket_type))
     await interaction.followup.send(f"✅ Deine Bewerbung wurde erstellt: {channel.mention}", ephemeral=True)
 
