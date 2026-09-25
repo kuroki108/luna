@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import logging
 import re
 from typing import Optional
 
@@ -10,6 +11,8 @@ import config
 from ticket_system import embed_builder
 from ticket_system.storage import TicketData, store
 from ticket_system.transcript import build_transcript
+
+log = logging.getLogger(__name__)
 
 
 def _sanitize(name: str) -> str:
@@ -115,14 +118,18 @@ async def delete_ticket(channel: discord.TextChannel, deleter: discord.Member, t
     if config.TRANSCRIPT_LOG_CHANNEL_ID:
         log_channel = channel.guild.get_channel(config.TRANSCRIPT_LOG_CHANNEL_ID)
 
-    if log_channel:
-        try:
-            file = await generate_transcript_file(channel)
-            opener = channel.guild.get_member(ticket.opener_id)
-            embed = embed_builder.ticket_deleted_log(channel, ticket.type, opener, ticket.opener_id, deleter)
-            await log_channel.send(embed=embed, file=file)
-        except Exception:
-            pass  # Transcript-Fehler soll das Löschen nicht verhindern
+    if not log_channel:
+        log.error("Transcript-Log-Kanal %s wurde nicht gefunden.", config.TRANSCRIPT_LOG_CHANNEL_ID)
+        return
+
+    try:
+        file = await generate_transcript_file(channel)
+        opener = channel.guild.get_member(ticket.opener_id)
+        embed = embed_builder.ticket_deleted_log(channel, ticket.type, opener, ticket.opener_id, deleter)
+        await log_channel.send(embed=embed, file=file)
+    except Exception:
+        log.exception("Transcript für Ticket %s konnte nicht archiviert werden.", channel.id)
+        return
 
     await store.delete_ticket(channel.id)
     await channel.delete(reason=f"Ticket gelöscht von {deleter} ({deleter.id})")
