@@ -62,17 +62,19 @@ def support_panel() -> discord.Embed:
     embed = discord.Embed(
         description=(
             "# <a:lunaRpalace:1533125760884281355> __SUPPORT__\n"
-            "Um ein Ticket zu öffnen, wähle bitte unten eine Option aus.\n"
+            "_ _\n"
+            "Um ein Ticket zu öffnen, wähle bitte unten eine Option aus.\n\n"
             "**Report**\n"
-            "-# Melde einen Nutzer\n"
+            "-# Melde einen Nutzer\n\n"
             "**Support**\n"
-            "-# Hilfe bei allgemeinen Fragen und Problemen\n"
+            "-# Hilfe bei allgemeinen Fragen und Problemen\n\n"
             "**Admin**\n"
             "-# Direkte Fragen an unsere Admins:\n"
             "-# • Anliegen an einen Admin\n"
             "-# • Fragen oder Wünsche zu unserem Bot\n"
-            "-# • Partnerschaften\n"
-            "-# Das Team wird sich so schnell wie möglich um dein Anliegen kümmern."
+            "-# • Partnerschaften\n\n"
+            "-# Das Team wird sich so schnell wie möglich um dein Anliegen kümmern.\n"
+            "_ _"
         ),
         color=config.EMBED_COLOR,
     )
@@ -95,16 +97,20 @@ def application_panel() -> discord.Embed:
 # Nachrichten im Ticket
 # ---------------------------------------------------------------------------
 def ticket_welcome(member: discord.Member, ticket_type: str) -> discord.Embed:
-    return discord.Embed(
-        title=f"🎫 Neues {type_label(ticket_type)}-Ticket",
+    embed = discord.Embed(
         description=(
-            f"Willkommen {member.mention}!\n\n"
-            "Bitte beschreibe dein Anliegen so genau wie möglich. "
-            "Ein Teammitglied meldet sich in Kürze bei dir."
+            "# <a:lunaRpalace:1533125760884281355> __SUPPORT-TICKET__\n\n"
+            f"### Willkommen {member.mention}!\n"
+            "Bitte beschreibe dein Anliegen so genau wie möglich.\n\n"
+            "-# Ein Teammitglied meldet sich in Kürze bei dir.\n"
+            "_ _"
         ),
         color=config.EMBED_COLOR,
         timestamp=discord.utils.utcnow(),
     )
+    # Kleines Bot-Profilbild vorne im Footer
+    embed.set_footer(text="⟣ 🪽 lunaR palace ₊ ⊹", icon_url=member.guild.me.display_avatar.url)
+    return embed
 
 
 def application_ticket(member: discord.Member, ticket_type: str, answers: dict[str, str]) -> discord.Embed:
@@ -119,14 +125,6 @@ def application_ticket(member: discord.Member, ticket_type: str, answers: dict[s
     return embed
 
 
-def ticket_info(ticket_type: str) -> discord.Embed:
-    """Separates Embed, das nach jedem Ticket-Öffnen geschickt wird."""
-    title, description = TICKET_INFO_TEXTS.get(
-        ticket_type, ("ℹ️ Info", "Ein Teammitglied kümmert sich bald um dein Ticket.")
-    )
-    return discord.Embed(title=title, description=description, color=config.EMBED_COLOR)
-
-
 # ---------------------------------------------------------------------------
 # Logs
 # ---------------------------------------------------------------------------
@@ -138,7 +136,7 @@ def ticket_deleted_log(
     deleter: discord.Member,
 ) -> discord.Embed:
     return discord.Embed(
-        title="🗑️ Ticket gelöscht",
+        title="Ticket gelöscht",
         description=(
             f"**Kanal:** #{channel.name}\n"
             f"**Typ:** {type_label(ticket_type)}\n"
