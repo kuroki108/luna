@@ -40,6 +40,14 @@ def _staff_role_id(ticket_type: str) -> int:
     return config.APPLICATION_STAFF_ROLE_ID
 
 
+def opening_mentions(member: discord.Member, ticket_type: str) -> str:
+    """Ping für den Ersteller und die zuständige Staff-Rolle beim Öffnen eines Tickets."""
+    staff_role_id = _staff_role_id(ticket_type)
+    if not staff_role_id:
+        return member.mention
+    return f"{member.mention} <@&{staff_role_id}>"
+
+
 class TicketLimitReached(Exception):
     """Wird ausgelöst, wenn ein Nutzer bereits die maximale Anzahl offener Tickets dieses Typs hat."""
 

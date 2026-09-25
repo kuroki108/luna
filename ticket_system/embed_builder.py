@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import discord
 
 import config
+
+# Pfad zum GIF, das im Support-Panel angezeigt wird (unabhängig vom Arbeitsverzeichnis)
+GIF_PATH = Path(__file__).resolve().parent.parent / "assets" / "gif.gif"
 
 # Menschlich lesbare Labels für die Ticket-Typen (u. a. für Embeds/Kanalnamen)
 TICKET_TYPE_LABELS = {
@@ -16,24 +21,24 @@ TICKET_TYPE_LABELS = {
 # (Titel, Beschreibung) pro Ticket-Typ – frei anpassbar.
 TICKET_INFO_TEXTS: dict[str, tuple[str, str]] = {
     "support": (
-        "ℹ️ Wichtige Infos",
+        "<a:lunaRpalace:1532899555715055616> Wichtige Infos",
         "• Beschreibe dein Problem so genau wie möglich.\n"
         "• Screenshots helfen uns oft weiter.\n"
         "• Bitte pinge das Team nicht unnötig an.",
     ),
     "support_report": (
-        "ℹ️ So meldest du jemanden",
+        "<a:lunaRpalace:1532899555715055616> So meldest du jemanden",
         "• **Wen** möchtest du melden? (Name + ID)\n"
         "• **Was** ist passiert?\n"
         "• **Beweise** (Screenshots, Nachrichtenlinks)",
     ),
     "support_admin": (
-        "ℹ️ Admin-Ticket",
+        "<a:lunaRpalace:1532899555715055616> Admin-Ticket",
         "• Dieses Ticket sehen nur Admins.\n"
         "• Bitte nutze es nur für Anliegen, die nicht der normale Support klären kann.",
     ),
     "application_supporter": (
-        "ℹ️ Wie geht es weiter?",
+        "<a:lunaRpalace:1532899555715055616> Wie geht es weiter?",
         "• Das Team prüft deine Bewerbung.\n"
         "• Rückfragen stellen wir dir hier im Ticket.\n"
         "• Bitte hab etwas Geduld und frag nicht ständig nach.",
@@ -48,15 +53,31 @@ def type_label(ticket_type: str) -> str:
 # ---------------------------------------------------------------------------
 # Panels
 # ---------------------------------------------------------------------------
+def support_panel_file() -> discord.File:
+    """GIF-Anhang für das Support-Panel – muss zusammen mit dem Embed gesendet werden."""
+    return discord.File(GIF_PATH, filename="gif.gif")
+
+
 def support_panel() -> discord.Embed:
-    return discord.Embed(
-        title="🎫 Support Ticket",
+    embed = discord.Embed(
         description=(
-            "Um ein Ticket zu öffnen, wähle bitte unten eine Option aus. \n"
-            "Das Team wird sich so schnell wie möglich um dein Anliegen kümmern."
+            "# <a:lunaRpalace:1533125760884281355> __SUPPORT__\n"
+            "Um ein Ticket zu öffnen, wähle bitte unten eine Option aus.\n"
+            "**Report**\n"
+            "-# Melde einen Nutzer\n"
+            "**Support**\n"
+            "-# Hilfe bei allgemeinen Fragen und Problemen\n"
+            "**Admin**\n"
+            "-# Direkte Fragen an unsere Admins:\n"
+            "-# • Anliegen an einen Admin\n"
+            "-# • Fragen oder Wünsche zu unserem Bot\n"
+            "-# • Partnerschaften\n"
+            "-# Das Team wird sich so schnell wie möglich um dein Anliegen kümmern."
         ),
         color=config.EMBED_COLOR,
     )
+    embed.set_image(url="attachment://gif.gif")
+    return embed
 
 
 def application_panel() -> discord.Embed:
