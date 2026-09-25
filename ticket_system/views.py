@@ -102,13 +102,17 @@ class _AddUserSelectView(discord.ui.View):
         await interaction.channel.send(f"➕ {target.mention} wurde von {interaction.user.mention} zum Ticket hinzugefügt.")
 
 
-class _ConfirmDeleteView(discord.ui.View):
-    def __init__(self, ticket_channel_id: int) -> None:
+class ConfirmDeleteView(discord.ui.View):
+    def __init__(self, ticket_channel_id: int, requester_id: int | None = None) -> None:
         super().__init__(timeout=30)
         self.ticket_channel_id = ticket_channel_id
+        self.requester_id = requester_id
 
     @discord.ui.button(label="Ja, endgültig löschen", style=discord.ButtonStyle.secondary)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        if self.requester_id is not None and interaction.user.id != self.requester_id:
+            await interaction.response.send_message("❌ Nur der Nutzer, der die Löschung angefordert hat, kann bestätigen.", ephemeral=True)
+            return
         ticket = await store.get_ticket(self.ticket_channel_id)
         if not ticket:
             await interaction.response.edit_message(content="❌ Ticket wurde nicht gefunden.", view=None)
@@ -118,6 +122,9 @@ class _ConfirmDeleteView(discord.ui.View):
 
     @discord.ui.button(label="Abbrechen", style=discord.ButtonStyle.secondary)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        if self.requester_id is not None and interaction.user.id != self.requester_id:
+            await interaction.response.send_message("❌ Nur der Nutzer, der die Löschung angefordert hat, kann abbrechen.", ephemeral=True)
+            return
         await interaction.response.edit_message(content="Abgebrochen.", view=None)
 
 
@@ -159,8 +166,8 @@ class TicketControlView(discord.ui.View):
             await interaction.response.send_message("❌ Nur Teammitglieder können Tickets löschen.", ephemeral=True)
             return
         await interaction.response.send_message(
-            "⚠️ Bist du sicher? Das Ticket wird inkl. Transcript unwiderruflich gelöscht.",
-            view=_ConfirmDeleteView(interaction.channel.id),
+            "⚠️ Bist du sicher? Das Ticket wird gelöscht; das Transcript bleibt im Log-Kanal erhalten.",
+            view=ConfirmDeleteView(interaction.channel.id, interaction.user.id),
             ephemeral=True,
         )
 
