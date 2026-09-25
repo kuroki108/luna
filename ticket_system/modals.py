@@ -19,7 +19,7 @@ async def _finish_application(interaction: discord.Interaction, ticket_type: str
         )
     except TicketLimitReached:
         await interaction.followup.send(
-            "❌ Du hast bereits eine offene Bewerbung dieser Art. Bitte warte, bis diese bearbeitet wurde.",
+            "Du hast bereits eine offene Bewerbung dieser Art. Bitte warte, bis diese bearbeitet wurde.",
             ephemeral=True,
         )
         return
@@ -31,7 +31,7 @@ async def _finish_application(interaction: discord.Interaction, ticket_type: str
         view=TicketControlView(show_add_user=False),
     )
     await channel.send(embed=embed_builder.ticket_info(ticket_type))
-    await interaction.followup.send(f"✅ Deine Bewerbung wurde erstellt: {channel.mention}", ephemeral=True)
+    await interaction.followup.send(f"Deine Bewerbung wurde erstellt: {channel.mention}", ephemeral=True)
 
 
 class SupporterApplicationModal(discord.ui.Modal, title="Bewerbung: Supporter"):

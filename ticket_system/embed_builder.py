@@ -96,7 +96,7 @@ def application_panel() -> discord.Embed:
 # ---------------------------------------------------------------------------
 # Nachrichten im Ticket
 # ---------------------------------------------------------------------------
-def ticket_welcome(member: discord.Member, ticket_type: str) -> discord.Embed:
+def ticket_welcome(member: discord.Member) -> discord.Embed:
     embed = discord.Embed(
         description=(
             "# <a:lunaRpalace:1533125760884281355> __SUPPORT-TICKET__\n\n"
@@ -111,6 +111,53 @@ def ticket_welcome(member: discord.Member, ticket_type: str) -> discord.Embed:
     # Kleines Bot-Profilbild vorne im Footer
     embed.set_footer(text="⟣ 🪽 lunaR palace ₊ ⊹", icon_url=member.guild.me.display_avatar.url)
     return embed
+
+
+def report_welcome(member: discord.Member) -> discord.Embed:
+    embed = discord.Embed(
+        description=(
+            "# <a:lunaRpalace:1533125760884281355> __REPORT-TICKET__\n\n"
+            f"### Willkommen {member.mention}!\n"
+            "Bitte beschreibe dein Anliegen so genau wie möglich.\n\n"
+            "-# Ein Teammitglied meldet sich in Kürze bei dir.\n"
+            "_ _"
+        ),
+        color=config.EMBED_COLOR,
+        timestamp=discord.utils.utcnow(),
+    )
+    embed.set_footer(text="⟣ 🪽 lunaR palace ₊ ⊹", icon_url=member.guild.me.display_avatar.url)
+    return embed
+
+
+def admin_welcome(member: discord.Member) -> discord.Embed:
+    embed = discord.Embed(
+        description=(
+            "# <a:lunaRpalace:1533125760884281355> __ADMIN-TICKET__\n\n"
+            f"### Willkommen {member.mention}!\n"
+            "Bitte beschreibe dein Anliegen so genau wie möglich.\n\n"
+            "-# Ein Teammitglied meldet sich in Kürze bei dir.\n"
+            "_ _"
+        ),
+        color=config.EMBED_COLOR,
+        timestamp=discord.utils.utcnow(),
+    )
+    embed.set_footer(text="⟣ 🪽 lunaR palace ₊ ⊹", icon_url=member.guild.me.display_avatar.url)
+    return embed
+
+
+def welcome_for(member: discord.Member, ticket_type: str) -> discord.Embed:
+    """Wählt das passende Willkommens-Embed für den Ticket-Typ."""
+    if ticket_type == "support_report":
+        return report_welcome(member)
+    if ticket_type == "support_admin":
+        return admin_welcome(member)
+    return ticket_welcome(member)
+
+
+def ticket_info(ticket_type: str) -> discord.Embed:
+    """Separates Info-Embed, das nach dem Willkommens-Embed geschickt wird (Texte in TICKET_INFO_TEXTS)."""
+    title, description = TICKET_INFO_TEXTS.get(ticket_type, TICKET_INFO_TEXTS["support"])
+    return discord.Embed(title=title, description=description, color=config.EMBED_COLOR)
 
 
 def application_ticket(member: discord.Member, ticket_type: str, answers: dict[str, str]) -> discord.Embed:
