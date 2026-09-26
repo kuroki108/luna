@@ -101,8 +101,7 @@ def unban_panel() -> discord.Embed:
         description=(
             "# <a:lunaRpalace:1533125760884281355> __ENTBANNUNG__\n"
             "_ _\n"
-            "Um einen Entbannungsantrag zu stellen, klicke bitte unten auf den Button.\n\n"
-            "**Entbannung**\n"
+            "**Entbannung**\n\n"
             "-# Stelle einen Antrag auf Entbannung vom Hauptserver\n\n"
             "-# Das Team wird sich so schnell wie möglich um deinen Antrag kümmern.\n"
             "_ _"
