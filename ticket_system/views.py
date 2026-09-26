@@ -72,7 +72,7 @@ class ApplicationPanelView(discord.ui.View):
 
     @discord.ui.button(
         label="Hier bewerben!",
-        emoji=config.EMOJI_HELPER,
+        emoji=config.EMOJI_ADMIN,
         style=discord.ButtonStyle.secondary,
         custom_id="za_open_app_supporter",
         row=0,
