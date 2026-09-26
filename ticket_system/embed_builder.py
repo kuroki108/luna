@@ -8,6 +8,8 @@ import config
 
 # Pfad zum GIF, das im Support-Panel angezeigt wird (unabhängig vom Arbeitsverzeichnis)
 GIF_PATH = Path(__file__).resolve().parent.parent / "assets" / "gif.gif"
+# Banner für das Anforderungen-Embed im Bewerbungs-Panel
+BANNER_PATH = Path(__file__).resolve().parent.parent / "assets" / "banner.png"
 
 # Menschlich lesbare Labels für die Ticket-Typen (u. a. für Embeds/Kanalnamen)
 TICKET_TYPE_LABELS = {
@@ -58,6 +60,11 @@ def support_panel_file() -> discord.File:
     return discord.File(GIF_PATH, filename="gif.gif")
 
 
+def banner_file() -> discord.File:
+    """Banner-Anhang für das Anforderungen-Embed – muss zusammen mit dem Embed gesendet werden."""
+    return discord.File(BANNER_PATH, filename="banner.png")
+
+
 def support_panel() -> discord.Embed:
     embed = discord.Embed(
         description=(
@@ -82,15 +89,38 @@ def support_panel() -> discord.Embed:
     return embed
 
 
-def application_panel() -> discord.Embed:
-    return discord.Embed(
-        title="📋 Werde Teil des Teams",
+def application_panel(ctx) -> discord.Embed:
+    embed = discord.Embed(
         description=(
-            "Wir suchen aktuell Verstärkung! Wähle unten aus, für welche Position "
-            "du dich bewerben möchtest. Es öffnet sich ein kurzes Formular."
+            "# <:lunaRpalace:1541149690760921139> __Team-Bewerbung__\n\n"
+            "### Willkommen auf __lunaR palace!__\n"
+            "-# Du hast Lust, unsere Community mitzugestalten?\n"
+            "-# Dann werde ein Teil von uns!"
         ),
         color=config.EMBED_COLOR,
     )
+    embed.set_image(url="attachment://gif.gif")
+    if ctx.guild and ctx.guild.icon:
+        embed.set_thumbnail(url=ctx.guild.icon.url)
+    return embed
+
+
+def application_panel_Anforderungen() -> discord.Embed:
+    embed = discord.Embed(
+        description=(
+            "### Anforderungen\n\n"
+            "Um angenommen zu werden, musst du folgende Kriterien erfüllen:\n\n"
+            "<:lunaRpalace:1541211249797242881> Mindestens 16 Jahre alt\n"
+            "<:lunaRpalace:1541211249797242881> Ein funktionierendes Mikrofon\n"
+            "<:lunaRpalace:1541211249797242881> Teamfähigkeit/Ehrlichkeit\n"
+            "<:lunaRpalace:1541211249797242881> Moderator-Erfahrung von Vorteil\n\n"
+            "Klick gerne unten auf den Button und werde Teil unseres Teams! <a:lunaRpalace:1532899555715055616>\n\n"
+            "-# Bitte beachte, dass die Bearbeitung etwas Zeit in Anspruch nehmen kann.\n"
+        ),
+        color=config.EMBED_COLOR,
+    )
+    embed.set_image(url="attachment://banner.png")
+    return embed
 
 
 # ---------------------------------------------------------------------------
@@ -155,20 +185,24 @@ def welcome_for(member: discord.Member, ticket_type: str) -> discord.Embed:
 
 
 def ticket_info(ticket_type: str) -> discord.Embed:
-    """Separates Info-Embed, das nach dem Willkommens-Embed geschickt wird (Texte in TICKET_INFO_TEXTS)."""
     title, description = TICKET_INFO_TEXTS.get(ticket_type, TICKET_INFO_TEXTS["support"])
     return discord.Embed(title=title, description=description, color=config.EMBED_COLOR)
 
 
 def application_ticket(member: discord.Member, ticket_type: str, answers: dict[str, str]) -> discord.Embed:
-    desc = "\n".join(f"**{q}**\n{a}" for q, a in answers.items())
+    answers_text = "\n\n".join(f"**{q}**\n{a}" for q, a in answers.items())
     embed = discord.Embed(
-        title=f"📋 {type_label(ticket_type)}",
-        description=f"Bewerbung von {member.mention}\n\n{desc}",
+        description=(
+            "# <:lunaRpalace:1541149690760921139> __BEWERBUNG__\n\n"
+            f"### Bewerbung von {member.mention}!\n\n"
+            f"{answers_text}\n"
+            "_ _"
+        ),
         color=config.EMBED_COLOR,
         timestamp=discord.utils.utcnow(),
     )
     embed.set_thumbnail(url=member.display_avatar.url)
+    embed.set_footer(text="⟣ 🪽 lunaR palace ₊ ⊹", icon_url=member.guild.me.display_avatar.url)
     return embed
 
 

@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from ticket_system import embed_builder
-from ticket_system.views import SupportPanelView, ApplicationPanelView
+from ticket_system.views import ApplicationPanelView, SupportPanelView
 
 
 class PanelsCog(commands.Cog):
@@ -27,8 +27,17 @@ class PanelsCog(commands.Cog):
     @commands.command(name="setup-bewerbung")
     @commands.has_permissions(administrator=True)
     async def setup_bewerbung(self, ctx: commands.Context) -> None:
-        embed = embed_builder.application_panel()
-        await ctx.channel.send(embed=embed, view=ApplicationPanelView())
+        # 1. Begrüßungs-Embed
+        await ctx.channel.send(
+            embed=embed_builder.application_panel(ctx),
+            file=embed_builder.support_panel_file(),
+        )
+        # 2. Anforderungen-Embed, darunter der Bewerben-Button
+        await ctx.channel.send(
+            embed=embed_builder.application_panel_Anforderungen(),
+            file=embed_builder.banner_file(),
+            view=ApplicationPanelView(),
+        )
 
 
 async def setup(bot: commands.Bot) -> None:
