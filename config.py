@@ -23,6 +23,11 @@ REPORT_CATEGORY_ID: int = 1540834871163748384          # Kategorie für Report-T
 ADMIN_CATEGORY_ID: int = 1540834743350722620         # Kategorie für Admin-Tickets
 APPLICATION_CATEGORY_ID: int = 1552431927620010035   # Kategorie für Bewerbungs-Tickets
 
+# Entbannungsserver (0 = nicht gesetzt)
+UNBAN_CATEGORY_ID: int = 1547387694919712809              # Kategorie für Entbannungs-Tickets
+UNBAN_STAFF_ROLE_ID: int = 1547386930860396674              # Rolle, die Entbannungs-Tickets bearbeitet
+UNBAN_TRANSCRIPT_LOG_CHANNEL_ID: int = 1547390291919634443  # Log-Kanal auf dem Entbannungsserver (0 = TRANSCRIPT_LOG_CHANNEL_ID)
+
 
 TRANSCRIPT_LOG_CHANNEL_ID: int = 1518365223310856232
 
@@ -34,6 +39,7 @@ SUPPORT_CHANNEL_PREFIX: str = "support"
 REPORT_CHANNEL_PREFIX: str = "report"
 ADMIN_CHANNEL_PREFIX: str = "admin"
 APPLICATION_CHANNEL_PREFIX: str = "bewerbung"
+UNBAN_CHANNEL_PREFIX: str = "entbannung"
 
 # Emojis für Panel-Buttons (frei anpassbar)
 EMOJI_OPEN_TICKET = ":lunaRpalace:1534751812068970606"

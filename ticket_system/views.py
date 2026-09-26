@@ -66,6 +66,25 @@ class SupportPanelView(discord.ui.View):
         await self._open(interaction, "support_admin")
 
 
+class UnbanPanelView(SupportPanelView):
+    """Panel für den Entbannungsserver – nutzt dieselbe Ticket-Logik wie das Support-Panel."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        # Nur den Entbannungs-Button anzeigen, nicht die Support-Buttons.
+        for item in (self.open_report, self.open_support, self.open_admin):
+            self.remove_item(item)
+
+    @discord.ui.button(
+        label="Entbannung",
+        emoji=config.EMOJI_OPEN_TICKET,
+        style=discord.ButtonStyle.secondary,
+        custom_id="za_open_unban",
+    )
+    async def open_unban(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        await self._open(interaction, "support_unban")
+
+
 class ApplicationPanelView(discord.ui.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
@@ -178,4 +197,4 @@ class TicketControlView(discord.ui.View):
 
 def all_persistent_views() -> list[discord.ui.View]:
     """Wird beim Bot-Start verwendet, um alle persistenten Views zu registrieren."""
-    return [SupportPanelView(), ApplicationPanelView(), TicketControlView()]
+    return [SupportPanelView(), UnbanPanelView(), ApplicationPanelView(), TicketControlView()]

@@ -16,6 +16,7 @@ TICKET_TYPE_LABELS = {
     "support": "Support",
     "support_report": "Report",
     "support_admin": "Admin",
+    "support_unban": "Entbannung",
     "application_supporter": "Bewerbung - Supporter",
 }
 
@@ -38,6 +39,12 @@ TICKET_INFO_TEXTS: dict[str, tuple[str, str]] = {
         "<a:lunaRpalace:1532899555715055616> Admin-Ticket",
         "• Dieses Ticket sehen nur Admins.\n"
         "• Bitte nutze es nur für Anliegen, die nicht der normale Support klären kann.",
+    ),
+    "support_unban": (
+        "<a:lunaRpalace:1532899555715055616> Dein Entbannungsantrag",
+        "• **Wann** und **warum** wurdest du gebannt?\n"
+        "• Warum sollten wir dich entbannen?\n"
+        "• Bitte bleib ehrlich und respektvoll.",
     ),
     "application_supporter": (
         "<a:lunaRpalace:1532899555715055616> Wie geht es weiter?",
@@ -81,6 +88,23 @@ def support_panel() -> discord.Embed:
             "-# • Fragen oder Wünsche zu unserem Bot\n"
             "-# • Partnerschaften\n\n"
             "-# Das Team wird sich so schnell wie möglich um dein Anliegen kümmern.\n"
+            "_ _"
+        ),
+        color=config.EMBED_COLOR,
+    )
+    embed.set_image(url="attachment://gif.gif")
+    return embed
+
+
+def unban_panel() -> discord.Embed:
+    embed = discord.Embed(
+        description=(
+            "# <a:lunaRpalace:1533125760884281355> __ENTBANNUNG__\n"
+            "_ _\n"
+            "Um einen Entbannungsantrag zu stellen, klicke bitte unten auf den Button.\n\n"
+            "**Entbannung**\n"
+            "-# Stelle einen Antrag auf Entbannung vom Hauptserver\n\n"
+            "-# Das Team wird sich so schnell wie möglich um deinen Antrag kümmern.\n"
             "_ _"
         ),
         color=config.EMBED_COLOR,
@@ -175,12 +199,30 @@ def admin_welcome(member: discord.Member) -> discord.Embed:
     return embed
 
 
+def unban_welcome(member: discord.Member) -> discord.Embed:
+    embed = discord.Embed(
+        description=(
+            "# <a:lunaRpalace:1533125760884281355> __ENTBANNUNGS-TICKET__\n\n"
+            f"### Willkommen {member.mention}!\n"
+            "Bitte beschreibe dein Anliegen so genau wie möglich.\n\n"
+            "-# Ein Teammitglied meldet sich in Kürze bei dir.\n"
+            "_ _"
+        ),
+        color=config.EMBED_COLOR,
+        timestamp=discord.utils.utcnow(),
+    )
+    embed.set_footer(text="⟣ 🪽 lunaR palace ₊ ⊹", icon_url=member.guild.me.display_avatar.url)
+    return embed
+
+
 def welcome_for(member: discord.Member, ticket_type: str) -> discord.Embed:
     """Wählt das passende Willkommens-Embed für den Ticket-Typ."""
     if ticket_type == "support_report":
         return report_welcome(member)
     if ticket_type == "support_admin":
         return admin_welcome(member)
+    if ticket_type == "support_unban":
+        return unban_welcome(member)
     return ticket_welcome(member)
 
 

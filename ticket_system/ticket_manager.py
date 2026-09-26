@@ -27,6 +27,8 @@ def _category_and_prefix(ticket_type: str) -> tuple[int, str]:
         return config.REPORT_CATEGORY_ID, config.REPORT_CHANNEL_PREFIX
     if ticket_type == "support_admin":
         return config.ADMIN_CATEGORY_ID, config.ADMIN_CHANNEL_PREFIX
+    if ticket_type == "support_unban":
+        return config.UNBAN_CATEGORY_ID, config.UNBAN_CHANNEL_PREFIX
     if ticket_type == "support":
         return config.SUPPORT_CATEGORY_ID, config.SUPPORT_CHANNEL_PREFIX
     return config.APPLICATION_CATEGORY_ID, config.APPLICATION_CHANNEL_PREFIX
@@ -35,6 +37,8 @@ def _category_and_prefix(ticket_type: str) -> tuple[int, str]:
 def _staff_role_id(ticket_type: str) -> int:
     if ticket_type == "support_admin":
         return config.ADMIN_ROLE_ID
+    if ticket_type == "support_unban":
+        return config.UNBAN_STAFF_ROLE_ID
     if ticket_type.startswith("support"):
         return config.SUPPORT_STAFF_ROLE_ID
     return config.APPLICATION_STAFF_ROLE_ID
@@ -122,12 +126,16 @@ async def generate_transcript_file(channel: discord.TextChannel) -> discord.File
 
 
 async def delete_ticket(channel: discord.TextChannel, deleter: discord.Member, ticket: TicketData) -> None:
+    log_channel_id = config.TRANSCRIPT_LOG_CHANNEL_ID
+    if ticket.type == "support_unban" and config.UNBAN_TRANSCRIPT_LOG_CHANNEL_ID:
+        log_channel_id = config.UNBAN_TRANSCRIPT_LOG_CHANNEL_ID
+
     log_channel = None
-    if config.TRANSCRIPT_LOG_CHANNEL_ID:
-        log_channel = channel.guild.get_channel(config.TRANSCRIPT_LOG_CHANNEL_ID)
+    if log_channel_id:
+        log_channel = channel.guild.get_channel(log_channel_id)
 
     if not log_channel:
-        log.error("Transcript-Log-Kanal %s wurde nicht gefunden.", config.TRANSCRIPT_LOG_CHANNEL_ID)
+        log.error("Transcript-Log-Kanal %s wurde nicht gefunden.", log_channel_id)
         return
 
     try:
