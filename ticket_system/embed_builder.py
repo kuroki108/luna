@@ -18,7 +18,7 @@ TICKET_TYPE_LABELS = {
     "support_admin": "Admin",
     "support_unban": "Entbannung",
     "application_supporter": "Bewerbung - Palace Helper",
-    "application_creator": "Bewerbung - Creator / Designer",
+    "application_creator": "Bewerbung - Content Creator",
 }
 
 # Inhalt des separaten Info-Embeds, das nach jedem Ticket-Öffnen geschickt wird.
