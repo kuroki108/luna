@@ -100,7 +100,7 @@ class ApplicationPanelView(discord.ui.View):
         await interaction.response.send_modal(SupporterApplicationModal())
 
     @discord.ui.button(
-        label="Creator / Designer",
+        label="Content Creator",
         emoji=config.EMOJI_ADMIN,
         style=discord.ButtonStyle.secondary,
         custom_id="za_open_app_creator",
