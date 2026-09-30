@@ -38,9 +38,9 @@ class PanelsCog(commands.Cog):
             embed=embed_builder.application_panel(ctx),
             file=embed_builder.support_panel_file(),
         )
-        # 2. Anforderungen-Embed, darunter der Bewerben-Button
+        # 2. Anforderungen-Embed, darunter die Bewerben-Buttons aller Rollen
         await ctx.channel.send(
-            embed=embed_builder.application_panel_Anforderungen(),
+            embed=embed_builder.application_panel_Anforderungen(ctx),
             file=embed_builder.banner_file(),
             view=ApplicationPanelView(),
         )

@@ -17,7 +17,8 @@ TICKET_TYPE_LABELS = {
     "support_report": "Report",
     "support_admin": "Admin",
     "support_unban": "Entbannung",
-    "application_supporter": "Bewerbung - Supporter",
+    "application_supporter": "Bewerbung - Palace Helper",
+    "application_creator": "Bewerbung - Creator / Designer",
 }
 
 # Inhalt des separaten Info-Embeds, das nach jedem Ticket-Öffnen geschickt wird.
@@ -47,6 +48,12 @@ TICKET_INFO_TEXTS: dict[str, tuple[str, str]] = {
         "• Bitte bleib ehrlich und respektvoll.",
     ),
     "application_supporter": (
+        "<a:lunaRpalace:1532899555715055616> Wie geht es weiter?",
+        "• Das Team prüft deine Bewerbung.\n"
+        "• Rückfragen stellen wir dir hier im Ticket.\n"
+        "• Bitte hab etwas Geduld und frag nicht ständig nach.",
+    ),
+    "application_creator": (
         "<a:lunaRpalace:1532899555715055616> Wie geht es weiter?",
         "• Das Team prüft deine Bewerbung.\n"
         "• Rückfragen stellen wir dir hier im Ticket.\n"
@@ -127,21 +134,25 @@ def application_panel(ctx) -> discord.Embed:
     return embed
 
 
-def application_panel_Anforderungen() -> discord.Embed:
+def application_panel_Anforderungen(ctx=None) -> discord.Embed:
     embed = discord.Embed(
         description=(
             "### Anforderungen\n\n"
             "Um angenommen zu werden, musst du folgende Kriterien erfüllen:\n\n"
-            "<:lunaRpalace:1541211249797242881> Mindestens 16 Jahre alt\n"
-            "<:lunaRpalace:1541211249797242881> Ein funktionierendes Mikrofon\n"
+            "<:lunaRpalace:1541211249797242881> mindestens 16 Jahre alt\n"
+            "<:lunaRpalace:1541211249797242881> ein funktionierendes Mikrofon\n"
             "<:lunaRpalace:1541211249797242881> Teamfähigkeit/Ehrlichkeit\n"
-            "<:lunaRpalace:1541211249797242881> Moderator-Erfahrung von Vorteil\n\n"
-            "Klick gerne unten auf den Button und werde Teil unseres Teams! <a:lunaRpalace:1532899555715055616>\n\n"
-            "-# Bitte beachte, dass die Bearbeitung etwas Zeit in Anspruch nehmen kann.\n"
+            "<:lunaRpalace:1541211249797242881> Erfahrung im jeweiligen Bereich von Vorteil\n"
+            "<:lunaRpalace:1541211249797242881> Motivation & Zuverlässigkeit\n\n"
+            "Wähle unten deine Wunschrolle aus und werde Teil unseres Teams! <a:lunaRpalace:1532899555715055616>\n\n"
+            "-# Bitte beachte, dass die Bearbeitung etwas Zeit in Anspruch nehmen kann."
         ),
         color=config.EMBED_COLOR,
+        timestamp=discord.utils.utcnow(),
     )
     embed.set_image(url="attachment://banner.png")
+    if ctx and ctx.guild:
+        embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon.url if ctx.guild.icon else None)
     return embed
 
 
@@ -231,9 +242,10 @@ def ticket_info(ticket_type: str) -> discord.Embed:
 
 def application_ticket(member: discord.Member, ticket_type: str, answers: dict[str, str]) -> discord.Embed:
     answers_text = "\n\n".join(f"**{q}**\n{a}" for q, a in answers.items())
+    role = type_label(ticket_type).removeprefix("Bewerbung - ")
     embed = discord.Embed(
         description=(
-            "# <:lunaRpalace:1541149690760921139> __BEWERBUNG__\n\n"
+            f"# <:lunaRpalace:1541149690760921139> __BEWERBUNG – {role}__\n\n"
             f"### Bewerbung von {member.mention}!\n\n"
             f"{answers_text}\n"
             "_ _"

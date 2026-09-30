@@ -16,7 +16,7 @@ DATABASE_PATH = DATA_DIR / "tickets.sqlite3"
 @dataclass
 class TicketData:
     channel_id: int
-    type: str  # "support" | "support_report" | "support_admin" | "application_supporter"
+    type: str  # "support" | "support_report" | "support_admin" | "application_supporter" | "application_creator"
     opener_id: int
     created_at: float = field(default_factory=time.time)
     closed: bool = False

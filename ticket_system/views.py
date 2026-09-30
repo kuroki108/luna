@@ -8,6 +8,7 @@ from ticket_system import ticket_manager
 from ticket_system.storage import store
 from ticket_system.ticket_manager import TicketLimitReached
 from ticket_system.modals import (
+    CreatorApplicationModal,
     SupporterApplicationModal,
 )
 
@@ -67,7 +68,6 @@ class SupportPanelView(discord.ui.View):
 
 
 class UnbanPanelView(SupportPanelView):
-    """Panel für den Entbannungsserver – nutzt dieselbe Ticket-Logik wie das Support-Panel."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -90,14 +90,24 @@ class ApplicationPanelView(discord.ui.View):
         super().__init__(timeout=None)
 
     @discord.ui.button(
-        label="Hier bewerben!",
+        label="Palace Helper",
         emoji=config.EMOJI_ADMIN,
         style=discord.ButtonStyle.secondary,
-        custom_id="za_open_app_supporter",
+        custom_id="za_open_app_palace_helper",
         row=0,
     )
     async def apply_supporter(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await interaction.response.send_modal(SupporterApplicationModal())
+
+    @discord.ui.button(
+        label="Creator / Designer",
+        emoji=config.EMOJI_ADMIN,
+        style=discord.ButtonStyle.secondary,
+        custom_id="za_open_app_creator",
+        row=0,
+    )
+    async def apply_creator(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        await interaction.response.send_modal(CreatorApplicationModal())
 
 
 # ---------------------------------------------------------------------------
