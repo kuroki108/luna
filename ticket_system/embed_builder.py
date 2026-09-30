@@ -134,7 +134,7 @@ def application_panel(ctx) -> discord.Embed:
     return embed
 
 
-def application_panel_Anforderungen(ctx=None) -> discord.Embed:
+def application_panel_Anforderungen() -> discord.Embed:
     embed = discord.Embed(
         description=(
             "### Anforderungen\n\n"
@@ -148,12 +148,8 @@ def application_panel_Anforderungen(ctx=None) -> discord.Embed:
             "-# Bitte beachte, dass die Bearbeitung etwas Zeit in Anspruch nehmen kann."
         ),
         color=config.EMBED_COLOR,
-        timestamp=discord.utils.utcnow(),
     )
     embed.set_image(url="attachment://banner.png")
-    if ctx and ctx.guild:
-        embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon.url if ctx.guild.icon else None)
-    return embed
 
 
 # ---------------------------------------------------------------------------
