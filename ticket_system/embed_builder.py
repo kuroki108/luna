@@ -134,7 +134,7 @@ def application_panel(ctx) -> discord.Embed:
     return embed
 
 
-def application_panel_Anforderungen() -> discord.Embed:
+def application_panel_Anforderungen(ctx=None) -> discord.Embed:
     embed = discord.Embed(
         description=(
             "### Anforderungen\n\n"
@@ -150,6 +150,7 @@ def application_panel_Anforderungen() -> discord.Embed:
         color=config.EMBED_COLOR,
     )
     embed.set_image(url="attachment://banner.png")
+    return embed
 
 
 # ---------------------------------------------------------------------------
