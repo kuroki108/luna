@@ -124,7 +124,7 @@ def application_panel(ctx) -> discord.Embed:
             "# <:lunaRpalace:1541149690760921139> __Team-Bewerbung__\n\n"
             "### Willkommen auf __lunaR palace!__\n"
             "-# Du hast Lust, unsere Community mitzugestalten?\n"
-            "-# Dann werde ein Teil von uns!"
+            "-# Dann werde gerne ein Teil von uns!"
         ),
         color=config.EMBED_COLOR,
     )
