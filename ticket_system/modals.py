@@ -52,3 +52,27 @@ class SupporterApplicationModal(discord.ui.Modal, title="Bewerbung: Supporter"):
             "Verfügbarkeit pro Woche": self.verfuegbarkeit.value,
         }
         await _finish_application(interaction, "application_supporter", answers)
+
+
+class CreatorApplicationModal(discord.ui.Modal, title="Bewerbung: Content Creator"):
+    cod = discord.ui.TextInput(label="Content Creator, Designer oder beides?", max_length=50, required=True)
+    alter = discord.ui.TextInput(label="Wie alt bist du?", max_length=10, required=True)
+    erfahrung = discord.ui.TextInput(
+        label="Hast du Erfahrung im Social Media Bereich?", style=discord.TextStyle.paragraph, max_length=500, required=True
+    )
+
+    motivation = discord.ui.TextInput(
+        label="Warum möchtest du Creator/Designer werden?", style=discord.TextStyle.paragraph, max_length=500, required=True
+    )
+
+    zeit = discord.ui.TextInput(label="Wie viel Zeit hast du pro Woche?", max_length=100, required=True)
+
+    async def on_submit(self, interaction: discord.Interaction) -> None:
+        answers = {
+            "Content Creator oder Designer": self.cod.value,
+            "Alter": self.alter.value,
+            "Erfahrung": self.erfahrung.value,
+            "Motivation": self.motivation.value,
+            "Verfügbarkeit pro Woche": self.zeit.value,
+        }
+        await _finish_application(interaction, "application_creator", answers)
