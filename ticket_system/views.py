@@ -36,7 +36,6 @@ class SupportPanelView(discord.ui.View):
             embed=embed,
             view=TicketControlView(),
         )
-        # Jail-Tickets haben bewusst kein separates Info-Embed.
         if ticket_type in embed_builder.TICKET_INFO_TEXTS:
             await channel.send(embed=embed_builder.ticket_info(ticket_type))
         await interaction.followup.send(f"Dein Ticket wurde erstellt: {channel.mention}", ephemeral=True)
