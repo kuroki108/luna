@@ -29,6 +29,8 @@ def _category_and_prefix(ticket_type: str) -> tuple[int, str]:
         return config.ADMIN_CATEGORY_ID, config.ADMIN_CHANNEL_PREFIX
     if ticket_type == "support_unban":
         return config.UNBAN_CATEGORY_ID, config.UNBAN_CHANNEL_PREFIX
+    if ticket_type == "support_jail":
+        return config.JAIL_CATEGORY_ID, config.JAIL_CHANNEL_PREFIX
     if ticket_type == "support":
         return config.SUPPORT_CATEGORY_ID, config.SUPPORT_CHANNEL_PREFIX
     return config.APPLICATION_CATEGORY_ID, config.APPLICATION_CHANNEL_PREFIX
@@ -39,6 +41,8 @@ def _staff_role_id(ticket_type: str) -> int:
         return config.ADMIN_ROLE_ID
     if ticket_type == "support_unban":
         return config.UNBAN_STAFF_ROLE_ID
+    if ticket_type == "support_jail":
+        return config.JAIL_STAFF_ROLE_ID
     if ticket_type.startswith("support"):
         return config.SUPPORT_STAFF_ROLE_ID
     return config.APPLICATION_STAFF_ROLE_ID

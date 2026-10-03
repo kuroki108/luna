@@ -28,6 +28,9 @@ UNBAN_CATEGORY_ID: int = 1547387694919712809              # Kategorie für Entba
 UNBAN_STAFF_ROLE_ID: int = 1547386930860396674              # Rolle, die Entbannungs-Tickets bearbeitet
 UNBAN_TRANSCRIPT_LOG_CHANNEL_ID: int = 1547390291919634443  # Log-Kanal auf dem Entbannungsserver (0 = TRANSCRIPT_LOG_CHANNEL_ID)
 
+# Jail-Support (0 = nicht gesetzt)
+JAIL_CATEGORY_ID: int = 1555967931630751815                                 # Kategorie für Jail-Tickets (0 = ohne Kategorie)
+JAIL_STAFF_ROLE_ID: int = SUPPORT_STAFF_ROLE_ID            # Rolle, die Jail-Tickets bearbeitet
 
 TRANSCRIPT_LOG_CHANNEL_ID: int = 1518365223310856232
 
@@ -40,6 +43,7 @@ REPORT_CHANNEL_PREFIX: str = "report"
 ADMIN_CHANNEL_PREFIX: str = "admin"
 APPLICATION_CHANNEL_PREFIX: str = "bewerbung"
 UNBAN_CHANNEL_PREFIX: str = "entbannung"
+JAIL_CHANNEL_PREFIX: str = "jail"
 
 # Emojis für Panel-Buttons (frei anpassbar)
 EMOJI_OPEN_TICKET = ":lunaRpalace:1534751812068970606"

@@ -17,6 +17,7 @@ TICKET_TYPE_LABELS = {
     "support_report": "Report",
     "support_admin": "Admin",
     "support_unban": "Entbannung",
+    "support_jail": "Jail",
     "application_supporter": "Bewerbung - Palace Helper",
     "application_creator": "Bewerbung - Content Creator",
 }
@@ -110,6 +111,21 @@ def unban_panel() -> discord.Embed:
             "_ _\n"
             "-# Stelle einen Antrag auf Entbannung vom Hauptserver\n\n"
             "-# Das Team wird sich so schnell wie möglich um deinen Antrag kümmern.\n"
+            "_ _"
+        ),
+        color=config.EMBED_COLOR,
+    )
+    embed.set_image(url="attachment://gif.gif")
+    return embed
+
+
+def jail_panel() -> discord.Embed:
+    embed = discord.Embed(
+        description=(
+            "# <a:lunaRpalace:1533125760884281355> __JAIL-SUPPORT__\n"
+            "_ _\n"
+            "Um ein Ticket zu öffnen, klicke bitte unten auf **„Ticket erstellen!“**.\n\n"
+            "-# Das Team wird sich so schnell wie möglich um dein Anliegen kümmern.\n"
             "_ _"
         ),
         color=config.EMBED_COLOR,
@@ -221,8 +237,27 @@ def unban_welcome(member: discord.Member) -> discord.Embed:
     return embed
 
 
+def jail_welcome(member: discord.Member) -> discord.Embed:
+    embed = discord.Embed(
+        description=(
+            "# <a:lunaRpalace:1533125760884281355> __JAIL-TICKET__\n\n"
+            f"### Willkommen {member.mention}!\n"
+            "Bitte beschreibe dein Anliegen so genau wie möglich.\n\n"
+            "-# Ein Teammitglied meldet sich in Kürze bei dir.\n"
+            "_ _"
+        ),
+        color=config.EMBED_COLOR,
+        timestamp=discord.utils.utcnow(),
+    )
+    guild = member.guild
+    embed.set_footer(text=guild.name, icon_url=guild.icon.url if guild.icon else None)
+    return embed
+
+
 def welcome_for(member: discord.Member, ticket_type: str) -> discord.Embed:
     """Wählt das passende Willkommens-Embed für den Ticket-Typ."""
+    if ticket_type == "support_jail":
+        return jail_welcome(member)
     if ticket_type == "support_report":
         return report_welcome(member)
     if ticket_type == "support_admin":
