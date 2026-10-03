@@ -48,6 +48,12 @@ TICKET_INFO_TEXTS: dict[str, tuple[str, str]] = {
         "• Warum sollten wir dich entbannen?\n"
         "• Bitte bleib ehrlich und respektvoll.",
     ),
+    "support_jail": (
+        "<a:lunaRpalace:1532899555715055616> Wichtige Infos",
+        "• Beschreibe dein Problem so genau wie möglich.\n"
+        "• Screenshots helfen uns oft weiter.\n"
+        "• Bitte pinge das Team nicht unnötig an.",
+    ),
     "application_supporter": (
         "<a:lunaRpalace:1532899555715055616> Wie geht es weiter?",
         "• Das Team prüft deine Bewerbung.\n"
