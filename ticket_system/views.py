@@ -36,7 +36,9 @@ class SupportPanelView(discord.ui.View):
             embed=embed,
             view=TicketControlView(),
         )
-        await channel.send(embed=embed_builder.ticket_info(ticket_type))
+        # Jail-Tickets haben bewusst kein separates Info-Embed.
+        if ticket_type in embed_builder.TICKET_INFO_TEXTS:
+            await channel.send(embed=embed_builder.ticket_info(ticket_type))
         await interaction.followup.send(f"Dein Ticket wurde erstellt: {channel.mention}", ephemeral=True)
 
     @discord.ui.button(
@@ -83,6 +85,24 @@ class UnbanPanelView(SupportPanelView):
     )
     async def open_unban(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         await self._open(interaction, "support_unban")
+
+
+class JailPanelView(SupportPanelView):
+
+    def __init__(self) -> None:
+        super().__init__()
+        # Nur den Jail-Button anzeigen, nicht die Support-Buttons.
+        for item in (self.open_report, self.open_support, self.open_admin):
+            self.remove_item(item)
+
+    @discord.ui.button(
+        label="Ticket erstellen!",
+        emoji=config.EMOJI_OPEN_TICKET,
+        style=discord.ButtonStyle.secondary,
+        custom_id="za_open_jail",
+    )
+    async def open_jail(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        await self._open(interaction, "support_jail")
 
 
 class ApplicationPanelView(discord.ui.View):
@@ -207,4 +227,4 @@ class TicketControlView(discord.ui.View):
 
 def all_persistent_views() -> list[discord.ui.View]:
     """Wird beim Bot-Start verwendet, um alle persistenten Views zu registrieren."""
-    return [SupportPanelView(), UnbanPanelView(), ApplicationPanelView(), TicketControlView()]
+    return [SupportPanelView(), UnbanPanelView(), JailPanelView(), ApplicationPanelView(), TicketControlView()]

@@ -28,6 +28,8 @@ def is_staff_for_ticket_type(member: discord.Member, ticket_type: str) -> bool:
         return is_admin(member)
     if ticket_type == "support_unban":
         return is_admin(member) or _has_role(member, config.UNBAN_STAFF_ROLE_ID)
+    if ticket_type == "support_jail":
+        return is_admin(member) or _has_role(member, config.JAIL_STAFF_ROLE_ID)
     if ticket_type.startswith("support"):
         return is_support_staff(member)
     if ticket_type.startswith("application"):

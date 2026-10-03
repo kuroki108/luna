@@ -29,7 +29,7 @@ intents.voice_states = True
 
 class LunaBot(commands.Bot):
     def __init__(self) -> None:
-        super().__init__(command_prefix=",", intents=intents)
+        super().__init__(command_prefix=".", intents=intents)
     async def setup_hook(self) -> None:
         await ticket_store.connect()
         log.info("SQLite-Datenbank verbunden.")

@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from ticket_system import embed_builder
-from ticket_system.views import ApplicationPanelView, SupportPanelView, UnbanPanelView
+from ticket_system.views import ApplicationPanelView, JailPanelView, SupportPanelView, UnbanPanelView
 
 
 class PanelsCog(commands.Cog):
@@ -28,6 +28,15 @@ class PanelsCog(commands.Cog):
             embed=embed_builder.unban_panel(),
             file=embed_builder.support_panel_file(),
             view=UnbanPanelView(),
+        )
+
+    @commands.command(name="setup-jail")
+    @commands.has_permissions(administrator=True)
+    async def setup_jail(self, ctx: commands.Context) -> None:
+        await ctx.channel.send(
+            embed=embed_builder.jail_panel(),
+            file=embed_builder.support_panel_file(),
+            view=JailPanelView(),
         )
 
     @commands.command(name="setup-bewerbung")
