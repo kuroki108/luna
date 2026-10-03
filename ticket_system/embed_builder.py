@@ -124,7 +124,7 @@ def jail_panel() -> discord.Embed:
         description=(
             "# <a:lunaRpalace:1533125760884281355> __JAIL-SUPPORT__\n"
             "_ _\n"
-            "Um ein Ticket zu öffnen, klicke bitte unten auf **„Ticket erstellen!“**.\n\n"
+            "Um ein Ticket zu öffnen, klicke bitte unten auf „**Ticket erstellen!**“.\n\n"
             "-# Das Team wird sich so schnell wie möglich um dein Anliegen kümmern.\n"
             "_ _"
         ),
