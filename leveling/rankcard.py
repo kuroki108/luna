@@ -70,7 +70,7 @@ def _font_source() -> str:
         except OSError:
             continue
     raise RuntimeError(
-        "Keine Schrift gefunden. Lege eine .ttf in modules/assets/fonts/ ab "
+        "Keine Schrift gefunden. Lege eine .ttf in leveling/assets/fonts/ ab "
         "(z. B. EBGaramond-Medium.ttf) oder setze CARD_FONT in config.py."
     )
 
