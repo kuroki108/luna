@@ -428,7 +428,7 @@ class Leveling(BoostMixin, DisplayMixin, commands.Cog):
         )
         embed.add_field(
             name="Levelup",
-            value="Neue Level-Rolle: Levelup-Bild + Ping · sonst Rangkarte (ohne Text, ohne Ping)",
+            value="Neue Level-Rolle: Ping + Levelup-Bild · sonst keine Nachricht",
             inline=False,
         )
         no_xp = [f"<#{i}>" for i in cfg.NO_XP_CHANNELS if guild.get_channel(i)]

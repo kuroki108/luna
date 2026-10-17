@@ -111,8 +111,8 @@ class DisplayMixin:
         return discord.File(buffer, filename="levelup.png")
 
     # ------------------------------------------------------------------
-    # Levelup: neue Level-Rolle -> Levelup-Bild + Ping (nur die Erwähnung, kein Text),
-    # sonst Rangkarte (ohne Text, ohne Ping)
+    # Levelup: neue Level-Rolle -> Ping (nur die Erwähnung, kein Text) + Levelup-Bild,
+    # sonst keine Nachricht
     # ------------------------------------------------------------------
 
     async def _announce_levelup(
@@ -123,6 +123,12 @@ class DisplayMixin:
         fallback_channel: discord.abc.Messageable | None,
     ) -> None:
         guild = member.guild
+
+        # Höchste Level-Rolle, die mit diesem Levelup neu erreicht wurde (None = keine -> nichts senden)
+        new_roles = [guild.get_role(role_id) for lv, role_id in LEVEL_ROLES if old_level < lv <= level]
+        role = next((r for r in reversed(new_roles) if r is not None), None)
+        if role is None:
+            return
 
         channel = fallback_channel
         if cfg.LEVELUP_CHANNEL_ID:
@@ -152,19 +158,14 @@ class DisplayMixin:
                     )
                 return
 
-        # Höchste Level-Rolle, die mit diesem Levelup neu erreicht wurde (None = keine)
-        new_roles = [guild.get_role(role_id) for lv, role_id in LEVEL_ROLES if old_level < lv <= level]
-        role = next((r for r in reversed(new_roles) if r is not None), None)
-
         try:
-            file = await (self._levelup_file(member, role) if role else self._rank_file(member))
+            file = await self._levelup_file(member, role)
         except Exception:
             log.exception("Levelup-Karte für %s (Level %s) konnte nicht erstellt werden", member.id, level)
             return
         try:
+            await channel.send(member.mention, allowed_mentions=discord.AllowedMentions(users=[member]))
             await channel.send(file=file, allowed_mentions=discord.AllowedMentions.none())
-            if role:
-                await channel.send(member.mention, allowed_mentions=discord.AllowedMentions(users=[member]))
         except discord.HTTPException as exc:
             log.warning("Levelup-Karte in Guild %s nicht gesendet: %s", guild.id, exc)
 
