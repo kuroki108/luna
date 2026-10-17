@@ -11,11 +11,11 @@ from .rankcard import circle_avatar, fit_text, font_for_cap_height, to_png
 
 TEMPLATE_PATH = Path(__file__).parent / "assets" / "levelup_template.png"
 
-# --- Layout (Pixel, gemessen an der Vorlage 2167 × 725) ----------------------
-AVATAR_CENTER = (322.5, 327.0)
+# --- Layout (Pixel, gemessen an der Vorlage 2169 × 725) ----------------------
+AVATAR_CENTER = (323.0, 326.5)
 AVATAR_RADIUS = 182  # weiße Innenfläche des Silberrings
 
-TEXT_CENTER_X = 1083  # Mitte unter "new chapter" bzw. Mitte des Namensschilds
+TEXT_CENTER_X = 1083.5  # Mitte unter "new chapter" bzw. Mitte des Namensschilds
 
 # (Grundlinie y, Versalhöhe in px, max. Breite) – exakt wie im Entwurf
 NAME_STYLE = (383, 36, 700)

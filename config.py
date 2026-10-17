@@ -100,7 +100,7 @@ LEVEL_EMBED_COLOR = 0x00E5FF    # für das Admin-Embed (level-config show)
 # Passend zum Entwurf: EB Garamond (Google Fonts, OFL), z. B. EBGaramond-Medium.ttf.
 CARD_FONT: str | None = None
 CARD_COOLDOWN_SECONDS = 5  # Pro Nutzer zwischen `rank`/`leaderboard`-Aufrufen (Rendern kostet CPU; 0 = aus)
-LEADERBOARD_SIZE = 10      # So viele Plätze zeigt das Leaderboard (1–25); die Top 3 stehen auf dem Podium
+LEADERBOARD_SIZE = 5       # So viele Plätze zeigt das Leaderboard (1–25); die Top 3 stehen auf dem Podium
 
 # ======================================================================
 # Text-XP
@@ -123,8 +123,8 @@ NO_XP_CHANNELS: list[int] = [1509590687010783239, 1528773508899799060, 151830044
 # Sonst: nur die Rangkarte – ohne Text und ohne Ping.
 # ======================================================================
 
-# Kanal-ID für Levelup-Karten. None = Kanal, in dem das Levelup passiert.
-# (Ein fester Kanal gilt nur auf seinem Server – auf anderen Servern wird der Levelup-Kanal genutzt.)
+# Kanal-ID für Levelup-Karten (Levelup-Bild, Ping, Rangkarte). Alles wird nur in diesen Kanal gesendet.
+# None = Kanal, in dem das Levelup passiert. Existiert die ID nicht, gibt es eine Warnung und keine Karte.
 LEVELUP_CHANNEL_ID = 1550166157183684719
 
 # ======================================================================

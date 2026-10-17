@@ -126,9 +126,17 @@ class DisplayMixin:
 
         channel = fallback_channel
         if cfg.LEVELUP_CHANNEL_ID:
+            # Fester Kanal: Levelup-Karten gehen nur dorthin, nie in den Kanal der Nachricht
             configured = guild.get_channel(cfg.LEVELUP_CHANNEL_ID)
-            if isinstance(configured, discord.abc.Messageable):
-                channel = configured
+            if not isinstance(configured, discord.abc.Messageable):
+                if cfg.LEVELUP_CHANNEL_ID not in _warned_levelup_channels:
+                    _warned_levelup_channels.add(cfg.LEVELUP_CHANNEL_ID)
+                    log.warning(
+                        "LEVELUP_CHANNEL_ID %s existiert in Guild %s nicht oder ist kein Textkanal – keine Levelup-Karten",
+                        cfg.LEVELUP_CHANNEL_ID, guild.id,
+                    )
+                return
+            channel = configured
         if channel is None:
             return
 
