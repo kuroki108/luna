@@ -2,9 +2,9 @@
 
 Nur nötig, wenn du eine neue Vorlage (mit Beispieltext) einsetzen willst:
     pip install opencv-python-headless
-    python tools/make_levelup_template.py deine_vorlage.png leveling/assets/levelup_template.png
+    python leveling/tools/make_levelup_template.py deine_vorlage.png leveling/assets/levelup_template.png
 
-Die Textboxen unten und die Koordinaten oben in leveling/levelup_card.py sind auf 2167 × 725 px
+Die Textboxen unten und die Koordinaten oben in leveling/levelup_card.py sind auf 2169 × 725 px
 gemessen – bei anderer Größe beides anpassen.
 """
 import sys
@@ -15,10 +15,10 @@ src, dst = sys.argv[1], sys.argv[2]
 img = cv2.imread(src)
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# Textboxen (x0, y0, x1, y1) in der 2167x725-Vorlage
+# Textboxen (x0, y0, x1, y1) in der 2169x725-Vorlage
 boxes = [
-    (912, 338, 1252, 394),   # USERNAME
-    (824, 493, 1343, 537),   # ROLLENNAME (im Namensschild)
+    (908, 322, 1258, 396),   # USERNAME
+    (822, 490, 1348, 538),   # ROLLENNAME (im Namensschild)
 ]
 
 mask = np.zeros_like(gray)
