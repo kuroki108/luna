@@ -125,7 +125,7 @@ NO_XP_CHANNELS: list[int] = [1509590687010783239, 1528773508899799060, 151830044
 
 # Kanal-ID für Levelup-Karten (Levelup-Bild, Ping, Rangkarte). Alles wird nur in diesen Kanal gesendet.
 # None = Kanal, in dem das Levelup passiert. Existiert die ID nicht, gibt es eine Warnung und keine Karte.
-LEVELUP_CHANNEL_ID = 1550166157183684719
+LEVELUP_CHANNEL_ID = 1509590685542776901
 
 # ======================================================================
 # Level-Rollen
