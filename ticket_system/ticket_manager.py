@@ -129,6 +129,24 @@ async def generate_transcript_file(channel: discord.TextChannel) -> discord.File
     return discord.File(buffer, filename=f"transcript-{channel.name}.html")
 
 
+async def archive_channel_transcript(
+    channel: discord.TextChannel, requester: discord.Member
+) -> Optional[discord.abc.Messageable]:
+    """Erstellt ein Transcript eines beliebigen Kanals und sendet es in den Transcript-Log-Kanal.
+
+    Gibt den Log-Kanal zurück oder None, wenn er nicht gefunden wurde.
+    """
+    log_channel = requester.guild.get_channel(config.TRANSCRIPT_LOG_CHANNEL_ID) if config.TRANSCRIPT_LOG_CHANNEL_ID else None
+    if not log_channel:
+        log.error("Transcript-Log-Kanal %s wurde nicht gefunden.", config.TRANSCRIPT_LOG_CHANNEL_ID)
+        return None
+
+    file = await generate_transcript_file(channel)
+    embed = embed_builder.channel_transcript_log(channel, requester)
+    await log_channel.send(embed=embed, file=file)
+    return log_channel
+
+
 async def delete_ticket(channel: discord.TextChannel, deleter: discord.Member, ticket: TicketData) -> None:
     log_channel_id = config.TRANSCRIPT_LOG_CHANNEL_ID
     if ticket.type == "support_unban" and config.UNBAN_TRANSCRIPT_LOG_CHANNEL_ID:

@@ -9,7 +9,7 @@ from ticket_system.views import ConfirmDeleteView
 
 
 class TicketCommandsCog(commands.Cog):
-    """Prefix-Commands im Ticket-Kanal: `adduser` und `delete`."""
+    """Prefix-Commands: `adduser` und `delete` im Ticket-Kanal, `transcript` für den aktuellen Kanal."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -45,3 +45,26 @@ class TicketCommandsCog(commands.Cog):
             "Bist du sicher? Das Ticket wird gelöscht; das Transcript bleibt im Log-Kanal erhalten.",
             view=ConfirmDeleteView(ctx.channel.id, ctx.author.id),
         )
+
+    @commands.command(name="transcript")
+    @commands.guild_only()
+    async def transcript_command(self, ctx: commands.Context) -> None:
+        """Erstellt ein Transcript des aktuellen Kanals und sendet es in den Log-Kanal."""
+        if not permissions.is_admin(ctx.author):
+            await ctx.send("Nur Admins können Transcripts erstellen.", delete_after=5)
+            return
+        channel = ctx.channel
+        if not isinstance(channel, discord.TextChannel):
+            await ctx.send("Transcripts gehen nur für Textkanäle.", delete_after=5)
+            return
+
+        try:
+            async with ctx.typing():
+                log_channel = await ticket_manager.archive_channel_transcript(channel, ctx.author)
+        except discord.Forbidden:
+            await ctx.send(f"Ich habe keinen Zugriff auf den Verlauf von {channel.mention}.", delete_after=5)
+            return
+        if not log_channel:
+            await ctx.send("Der Transcript-Log-Kanal wurde nicht gefunden.", delete_after=5)
+            return
+        await ctx.send(f"Transcript von {channel.mention} wurde in {log_channel.mention} gespeichert.")
