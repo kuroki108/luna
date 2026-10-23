@@ -317,3 +317,18 @@ def ticket_deleted_log(
         color=config.EMBED_COLOR,
         timestamp=discord.utils.utcnow(),
     )
+
+
+def channel_transcript_log(
+    channel: discord.TextChannel,
+    requester: discord.Member,
+) -> discord.Embed:
+    return discord.Embed(
+        title="Kanal-Transcript erstellt",
+        description=(
+            f"**Kanal:** {channel.mention} (#{channel.name})\n"
+            f"**Erstellt von:** {requester.mention}"
+        ),
+        color=config.EMBED_COLOR,
+        timestamp=discord.utils.utcnow(),
+    )

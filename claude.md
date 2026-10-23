@@ -36,6 +36,7 @@ Ticket-System:
 - `.setup-support`, `.setup-ban`, `.setup-jail`, `.setup-bewerbung` senden die Panels.
 - `.adduser @User` fügt im Ticket-Kanal einen Nutzer hinzu.
 - `.delete` fordert eine Bestätigung an und erstellt vor dem Löschen ein Transcript.
+- `.transcript` (Admin) erstellt ein Transcript des aktuellen Textkanals und sendet es in den Transcript-Log-Kanal.
 
 Level-System:
 
