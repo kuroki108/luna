@@ -4,7 +4,7 @@ from pathlib import Path
 
 BOT_TOKEN: str = os.environ.get("DISCORD_TOKEN", "")
 
-GUILD_ID: int = 1509590685081272401  # ID deines Discord-Servers (gilt für Tickets, Slash-Commands und Level-System)
+GUILD_ID: int = 1509590685081272401  # ID deines Discord-Servers (gilt für Tickets, Slash-Commands, Level-System und Invite-Tracker)
 
 # -------------------------------------------------------
 # Admin-/Staff-Rollen
@@ -58,23 +58,11 @@ EMOJI_HELPER = ":lunaRpalace:1544143111335182446"
 EMBED_COLOR: int = 0xFFFFFF
 
 
-# =======================================================
-# LEVEL-SYSTEM (leveling/)
-# =======================================================
 
-# ======================================================================
-# Datenbank & Logging
-# ======================================================================
-
-# Standard: <Projekt-Root>/data/leveling.sqlite3
 LEVEL_DB_PATH = Path(__file__).resolve().parent / "data" / "leveling.sqlite3"
 LEVEL_LOGGER_NAME = "leveling"
 
-# ======================================================================
-# Command-Namen
-# Anpassen, falls ein Name schon von einem anderen Cog belegt ist –
-# sonst schlägt das Laden mit `CommandRegistrationError` fehl.
-# ======================================================================
+
 
 # Prefix-Commands (es gibt keine Slash-Commands)
 COMMAND_RANK = "rank"
@@ -85,19 +73,9 @@ COMMAND_XP_BOOST = "xprise"  # .xprise <prozent> <dauer> [text|voice] – zeitli
 
 COMMAND_LEVEL_CONFIG = "level-config"  # nur noch `show` (Anzeige der Einstellungen)
 
-# ======================================================================
-# Darstellung
-# ======================================================================
-
 LEVEL_EMBED_COLOR = 0x00E5FF    # für das Admin-Embed (level-config show)
 
-# ======================================================================
-# Bilder: Rangkarte & Leaderboard
-# ======================================================================
 
-# Pfad zu einer .ttf/.otf-Schrift. None = erste Schrift in modules/assets/fonts/,
-# sonst Georgia/Times (Windows) bzw. Liberation/DejaVu Serif (Linux).
-# Passend zum Entwurf: EB Garamond (Google Fonts, OFL), z. B. EBGaramond-Medium.ttf.
 CARD_FONT: str | None = None
 CARD_COOLDOWN_SECONDS = 5  # Pro Nutzer zwischen `rank`/`leaderboard`-Aufrufen (Rendern kostet CPU; 0 = aus)
 LEADERBOARD_SIZE = 5       # So viele Plätze zeigt das Leaderboard (1–25); die Top 3 stehen auf dem Podium
@@ -110,33 +88,16 @@ XP_MIN = 15            # XP pro Nachricht: Zufallswert von XP_MIN bis XP_MAX (1 
 XP_MAX = 25
 COOLDOWN_SECONDS = 60  # So lange gibt es nach einer XP-Nachricht keine neuen Text-XP (0 = kein Cooldown)
 
-# ======================================================================
-# Kanäle ohne XP
-# ======================================================================
-
 
 NO_XP_CHANNELS: list[int] = [1509590687010783239, 1528773508899799060, 1518300447486513283, 1509590687010783233, 1546944555038023721, 1509590685689446468, 1509590685844770957, 1509590685844770964, 1509590686012539021, 1509590686704603266, 1509590686012539025, 1532084834451853452, 1529675022690553957]
 
-# ======================================================================
-# Levelup
-# Neue Level-Rolle erreicht: Levelup-Bild (Name + Rollenname), danach eine Nachricht nur mit dem Ping.
-# Sonst: nur die Rangkarte – ohne Text und ohne Ping.
-# ======================================================================
 
-# Kanal-ID für Levelup-Karten (Levelup-Bild, Ping, Rangkarte). Alles wird nur in diesen Kanal gesendet.
-# None = Kanal, in dem das Levelup passiert. Existiert die ID nicht, gibt es eine Warnung und keine Karte.
 LEVELUP_CHANNEL_ID = 1509590685542776901
 
 # ======================================================================
 # Level-Rollen
 # ======================================================================
 
-# Level → Rollen-ID. Jede Rolle darf nur einmal vorkommen.
-# Vergeben wird beim Levelup, beim Wiederbeitritt auf den Server und beim Bot-Start (gleicht alle Mitglieder ab).
-# Die Bot-Rolle muss in den Server-Einstellungen ÜBER diesen Rollen stehen und der Bot braucht "Rollen verwalten".
-# Level 0 = Mitglieder ohne XP (z. B. eine Neuling-Rolle direkt beim Beitritt).
-# Wird eine Rolle hier gelöscht, behalten Mitglieder sie – dann in Discord manuell entfernen.
-# Beispiel: LEVEL_ROLES = {1: 123456789012345678, 10: 234567890123456789, 25: 345678901234567890}
 LEVEL_ROLES: dict[int, int] = {1: 1509590685114961991, 5: 1509590685114961992, 10: 1509590685114961993, 15:1509590685114961994, 20:1509590685114961995, 25:1509590685114961996, 30: 1509590685114961997, 40: 1509590685114961998, 50: 1509590685114961999, 60: 1530182441581412485, 70:1530182796805668945, 80: 1530182900354519191, 90: 1530182963231199293, 100: 1530183062783135778}
 
 # True = alle erreichten Level-Rollen behalten, False = nur die höchste.
@@ -167,3 +128,32 @@ VOICE_DAILY_CAP_MINUTES = 90   # Max. Minuten mit Voice-XP pro Tag (0 = kein Lim
 VOICE_REQUIRE_UNMUTED = True  # True = stummgeschaltete Nutzer bekommen keine Voice-XP
 
 VOICE_MIN_MEMBERS = 2
+
+
+# =======================================================
+# INVITE-TRACKER (invite_tracker/)
+# Der Bot braucht auf GUILD_ID die Berechtigung "Server verwalten", um Invites lesen zu können.
+# =======================================================
+
+# Standard: <Projekt-Root>/data/invites.sqlite3
+INVITE_DB_PATH = Path(__file__).resolve().parent / "data" / "invites.sqlite3"
+
+# Prefix-Commands (für alle Mitglieder)
+COMMAND_INVITES = "invites"                        # .invites [nutzer] – Invite-Statistik
+COMMAND_INVITE_LEADERBOARD = "invite-leaderboard"  # .invite-leaderboard – Top-Inviter
+COMMAND_INVITED_BY = "invitedby"                   # .invitedby [nutzer] – wer hat den Nutzer eingeladen
+
+INVITE_LEADERBOARD_SIZE = 10  # So viele Plätze zeigt das Invite-Leaderboard (1–25)
+
+# Kanal-ID für die Beitritts-Nachricht ("@Neu wurde von @Inviter eingeladen"). 0 = keine Nachricht.
+INVITE_LOG_CHANNEL_ID: int = 0
+
+
+# =======================================================
+# SERVER-LOG (server_log/)
+# Für "Von" bei Kick/Bann/Entbannung braucht der Bot die Berechtigung "Audit-Log anzeigen".
+# =======================================================
+
+MESSAGE_LOG_CHANNEL_ID: int = 0  # Gelöschte und bearbeitete Nachrichten (0 = aus)
+MEMBER_LOG_CHANNEL_ID: int = 0   # Beitritte und Austritte (0 = aus)
+MOD_LOG_CHANNEL_ID: int = 0      # Kicks, Banns und Entbannungen (0 = aus)
