@@ -44,6 +44,10 @@ class LunaBot(commands.Bot):
         await self.add_cog(TicketCommandsCog(self))
         await self.load_extension("leveling.leveling")
         log.info("Level-System geladen.")
+        await self.load_extension("invite_tracker.invites")
+        log.info("Invite-Tracker geladen.")
+        await self.load_extension("server_log.log")
+        log.info("Server-Log geladen.")
 
         if config.GUILD_ID:
             guild_obj = discord.Object(id=config.GUILD_ID)
@@ -67,6 +71,10 @@ class LunaBot(commands.Bot):
         print(f"{'─'*45}\n")
 
     async def on_command_error(self, ctx, error):
+        if ctx.cog and ctx.cog.has_error_handler():
+            return  # Cog antwortet selbst (Leveling, Invite-Tracker)
+        if isinstance(error, commands.CommandNotFound):
+            return
         if isinstance(error, (commands.MissingAnyRole, commands.MissingPermissions, commands.MissingRole)):
             await ctx.send("Du hast keine Berechtigung diesen Befehl auszuführen.", delete_after=3)
         else:

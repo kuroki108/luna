@@ -1,0 +1,66 @@
+LUNA – ALLE BOT-COMMANDS
+========================
+
+Prefix: .    (es gibt keine Slash-Commands)
+<...> = Pflichtangabe, [...] = optional
+Level- und Invite-Commands funktionieren nur auf dem Hauptserver (GUILD_ID in config.py),
+Ticket-Commands auch auf dem Entbannungsserver.
+
+
+TICKET-SYSTEM
+-------------
+
+.setup-support            Sendet das Support-Panel in den aktuellen Kanal.            Administrator
+.setup-ban                Sendet das Entbannungs-Panel in den aktuellen Kanal.        Administrator
+.setup-jail               Sendet das Jail-Panel in den aktuellen Kanal.               Administrator
+.setup-bewerbung          Sendet das Bewerbungs-Panel in den aktuellen Kanal.         Administrator
+
+.adduser <@User>          Fügt einen Nutzer zum aktuellen Ticket hinzu.               Team des Ticket-Typs
+.delete                   Löscht das aktuelle Ticket (mit Bestätigung);               Team des Ticket-Typs
+                          vorher wird ein Transcript in den Log-Kanal gesendet.
+.transcript               Erstellt ein Transcript des aktuellen Kanals und            Admin
+                          sendet es in den Transcript-Log-Kanal.
+
+
+LEVEL-SYSTEM
+------------
+
+.rank [@Mitglied]         Zeigt die Rangkarte (ohne Angabe: deine eigene).            alle (5 s Cooldown)
+.leaderboard              Zeigt die XP-Bestenliste als Bild.                          alle (5 s Cooldown)
+
+.xp add <@Mitglied> <XP>       Gibt einem Mitglied XP (1–1.000.000).                  Server verwalten
+.xp remove <@Mitglied> <XP>    Zieht einem Mitglied XP ab (1–1.000.000).              Server verwalten
+
+.xprise <prozent> <dauer> [text|voice]                                                Server verwalten
+                          Startet einen XP-Boost. Ohne text/voice gilt er für beide.
+                          Prozent: 1–1000. Dauer: 1 Minute bis 30 Tage, z. B. 30m, 3h, 1d, 1h30m.
+                          Beispiele: .xprise 20 3h   |   .xprise 50 1h30m voice
+.xprise status            Zeigt die aktiven XP-Boosts.                                Server verwalten
+.xprise stop [text|voice] Beendet XP-Boosts (ohne Angabe: alle).                      Server verwalten
+
+.level-config show        Zeigt die Level-Einstellungen aus config.py.               Server verwalten
+
+
+INVITE-TRACKER
+--------------
+
+.invites [@Nutzer]        Invite-Statistik: aktiv, verlassen, gesamt und              alle
+                          aktive Links (ohne Angabe: deine eigene).
+.invite-leaderboard       Top-Inviter des Servers.                                    alle
+.invitedby [@Nutzer]      Zeigt, wer den Nutzer eingeladen hat                        alle
+                          (ohne Angabe: dich selbst).
+
+
+SONSTIGES
+---------
+
+.help [command]           Standard-Hilfe von discord.py mit allen Commands.           alle
+
+
+OHNE COMMANDS (läuft automatisch)
+---------------------------------
+
+Server-Log      Gelöschte/bearbeitete Nachrichten, Beitritte/Austritte, Kicks, Banns, Entbannungen.
+                Kanäle: MESSAGE_LOG_CHANNEL_ID, MEMBER_LOG_CHANNEL_ID, MOD_LOG_CHANNEL_ID (0 = aus).
+Invite-Log      Meldung bei jedem Beitritt, wer eingeladen hat: INVITE_LOG_CHANNEL_ID (0 = aus).
+Level-System    Text- und Voice-XP, Level-Rollen, Levelup-Karten in LEVELUP_CHANNEL_ID.
