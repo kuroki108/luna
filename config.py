@@ -146,7 +146,7 @@ COMMAND_INVITED_BY = "invitedby"                   # .invitedby [nutzer] – wer
 INVITE_LEADERBOARD_SIZE = 10  # So viele Plätze zeigt das Invite-Leaderboard (1–25)
 
 # Kanal-ID für die Beitritts-Nachricht ("@Neu wurde von @Inviter eingeladen"). 0 = keine Nachricht.
-INVITE_LOG_CHANNEL_ID: int = 0
+INVITE_LOG_CHANNEL_ID: int = 1509590686209540109
 
 
 # =======================================================
@@ -154,6 +154,6 @@ INVITE_LOG_CHANNEL_ID: int = 0
 # Für "Von" bei Kick/Bann/Entbannung braucht der Bot die Berechtigung "Audit-Log anzeigen".
 # =======================================================
 
-MESSAGE_LOG_CHANNEL_ID: int = 0  # Gelöschte und bearbeitete Nachrichten (0 = aus)
-MEMBER_LOG_CHANNEL_ID: int = 0   # Beitritte und Austritte (0 = aus)
-MOD_LOG_CHANNEL_ID: int = 0      # Kicks, Banns und Entbannungen (0 = aus)
+MESSAGE_LOG_CHANNEL_ID: int = 1509590686012539030  # Gelöschte und bearbeitete Nachrichten (0 = aus)
+MEMBER_LOG_CHANNEL_ID: int = 1509590686209540107   # Beitritte und Austritte (0 = aus)
+MOD_LOG_CHANNEL_ID: int = 1509590686012539027      # Kicks, Banns und Entbannungen (0 = aus)
