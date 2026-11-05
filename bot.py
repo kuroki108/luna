@@ -31,7 +31,7 @@ class LunaBot(commands.Bot):
         super().__init__(
             command_prefix=".",
             intents=intents,
-            activity=discord.CustomActivity(name="༄ floating through lunaR palace…"),
+            activity=discord.CustomActivity(name="༄ floating through lunaR palace …"),
         )
     async def setup_hook(self) -> None:
         await ticket_store.connect()
