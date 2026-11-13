@@ -14,7 +14,8 @@ from .database import ServerLogDatabase
 log = logging.getLogger(__name__)
 
 EMBED_COLOR = cfg.EMBED_COLOR
-LOG_CHANNEL_SETTINGS = ("MESSAGE_LOG_CHANNEL_ID", "MEMBER_LOG_CHANNEL_ID", "MOD_LOG_CHANNEL_ID")
+LOG_CHANNEL_SETTINGS = ("MESSAGE_LOG_CHANNEL_ID", "MEMBER_LOG_CHANNEL_ID", "MOD_LOG_CHANNEL_ID", "ROLE_LOG_CHANNEL_ID")
+UNLOG_REPLY_SECONDS = 5  # So lange bleibt die Antwort auf `.unlog` sichtbar.
 
 
 def truncate(text: str, limit: int = 1024) -> str:
@@ -27,6 +28,43 @@ def _is_tracked(guild: discord.Guild | None) -> bool:
     return guild is not None and guild.id == cfg.GUILD_ID
 
 
+def _role_update_view(
+    member: discord.Member,
+    added: list[discord.Role],
+    removed: list[discord.Role],
+    changed_by: discord.abc.User | None,
+    reason: str | None,
+) -> discord.ui.LayoutView:
+    """Rollen-Log im Komponenten-Layout: Überschrift, Trennlinie, Änderung, Auslöser, User-ID mit Zeitstempel."""
+    lines = []
+    if added:
+        lines.append(f"{member.mention} hat {', '.join(r.mention for r in added)} erhalten")
+    if removed:
+        lines.append(f"{member.mention} hat {', '.join(r.mention for r in removed)} verloren")
+
+    container = discord.ui.Container(
+        discord.ui.TextDisplay(f"### {cfg.ROLE_LOG_EMOJI} Rollen aktualisiert"),
+        discord.ui.Separator(),
+        discord.ui.TextDisplay(truncate("\n".join(lines), 3000)),
+    )
+    if changed_by is not None:
+        if changed_by.id == member.id:
+            label = "Selbst entfernt" if removed and not added else "Selbst vergeben"
+        elif changed_by.bot:
+            label = "Bot"
+        else:
+            label = "Moderator"
+        container.add_item(discord.ui.TextDisplay(f"**{label}**\n{changed_by.mention} (`{changed_by.id}`)"))
+    if reason:
+        container.add_item(discord.ui.TextDisplay(f"**Grund**\n{truncate(reason, 500)}"))
+    timestamp = discord.utils.format_dt(datetime.now(timezone.utc), "f")
+    container.add_item(discord.ui.TextDisplay(f"-# User-ID: {member.id} • {timestamp}"))
+
+    view = discord.ui.LayoutView(timeout=None)
+    view.add_item(container)
+    return view
+
+
 def _validate_config() -> None:
     wrong = [name for name in LOG_CHANNEL_SETTINGS if not isinstance(getattr(cfg, name), int)]
     if wrong:
@@ -36,7 +74,7 @@ def _validate_config() -> None:
 
 
 class LoggingCog(commands.Cog):
-    """Server-Log: gelöschte/bearbeitete Nachrichten, Beitritte/Austritte, Kicks, Banns."""
+    """Server-Log: gelöschte/bearbeitete Nachrichten, Beitritte/Austritte, Kicks, Banns, Rollenänderungen."""
 
     def __init__(self, bot: commands.Bot, db: ServerLogDatabase) -> None:
         self.bot = bot
@@ -44,6 +82,8 @@ class LoggingCog(commands.Cog):
         self._warned_channels: set[int] = set()
         # Kanäle, deren Nachrichten per `.unlog` nicht geloggt werden.
         self._unlogged: set[int] = set()
+        # Nachrichten, die der Bot selbst löscht (`.unlog`-Befehle) und die nicht geloggt werden sollen.
+        self._silent_deletes: set[int] = set()
 
     async def cog_load(self) -> None:
         await self.db.connect()
@@ -62,7 +102,9 @@ class LoggingCog(commands.Cog):
         parent_id = getattr(channel, "parent_id", None)
         return parent_id is not None and parent_id in self._unlogged
 
-    async def _send(self, channel_id: int, embed: discord.Embed) -> None:
+    async def _send(
+        self, channel_id: int, embed: discord.Embed | None = None, *, view: discord.ui.LayoutView | None = None
+    ) -> None:
         if not channel_id:
             return
         channel = self.bot.get_channel(channel_id)
@@ -72,7 +114,11 @@ class LoggingCog(commands.Cog):
                 log.warning("Log-Kanal %s nicht gefunden.", channel_id)
             return
         try:
-            await channel.send(embed=embed)
+            if view is not None:
+                # Im Komponenten-Layout würden Erwähnungen pingen – deshalb alle Pings aus.
+                await channel.send(view=view, allowed_mentions=discord.AllowedMentions.none())
+            else:
+                await channel.send(embed=embed)
         except discord.HTTPException as exc:
             log.warning("Log-Nachricht in Kanal %s nicht gesendet: %s", channel_id, exc)
 
@@ -81,11 +127,14 @@ class LoggingCog(commands.Cog):
     # -----------------------------------------------------------------
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message) -> None:
+        if message.id in self._silent_deletes:
+            self._silent_deletes.discard(message.id)
+            return
         if not _is_tracked(message.guild) or message.author.bot or self._is_unlogged(message.channel):
             return
 
         embed = discord.Embed(
-            title="🗑️ Nachricht gelöscht",
+            title="Nachricht gelöscht",
             color=EMBED_COLOR,
             timestamp=datetime.now(timezone.utc),
         )
@@ -110,7 +159,7 @@ class LoggingCog(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="✏️ Nachricht bearbeitet",
+            title="Nachricht bearbeitet",
             color=EMBED_COLOR,
             timestamp=datetime.now(timezone.utc),
         )
@@ -125,25 +174,36 @@ class LoggingCog(commands.Cog):
     # -----------------------------------------------------------------
     # COMMAND: .unlog
     # -----------------------------------------------------------------
+    async def _delete_command_message(self, ctx: commands.Context) -> None:
+        """Löscht die `.unlog`-Nachricht, ohne dass die Löschung im Nachrichten-Log landet."""
+        self._silent_deletes.add(ctx.message.id)
+        try:
+            await ctx.message.delete()
+        except discord.HTTPException as exc:
+            self._silent_deletes.discard(ctx.message.id)
+            log.warning("`.unlog`-Nachricht in Kanal %s nicht gelöscht: %s", ctx.channel.id, exc)
+
     @commands.command(name="unlog")
     @commands.has_guild_permissions(administrator=True)
     async def unlog_command(self, ctx: commands.Context) -> None:
         """Schaltet das Nachrichten-Log für den aktuellen Kanal aus bzw. wieder ein."""
+        await self._delete_command_message(ctx)
         if not _is_tracked(ctx.guild):
-            await ctx.send("Der Server-Log läuft nur auf dem Hauptserver.", delete_after=5)
+            await ctx.send("Der Server-Log läuft nur auf dem Hauptserver.", delete_after=UNLOG_REPLY_SECONDS)
             return
 
         channel = ctx.channel
         if channel.id in self._unlogged:
             await self.db.remove_unlogged_channel(channel.id)
             self._unlogged.discard(channel.id)
-            await ctx.send(f"🔔 {channel.mention} wird wieder geloggt.")
+            await ctx.send(f"{channel.mention} wird wieder geloggt.", delete_after=UNLOG_REPLY_SECONDS)
         else:
             await self.db.add_unlogged_channel(ctx.guild.id, channel.id, ctx.author.id)
             self._unlogged.add(channel.id)
             await ctx.send(
-                f"🔕 Gelöschte und bearbeitete Nachrichten in {channel.mention} werden nicht mehr geloggt. "
-                "Mit `.unlog` wieder einschalten."
+                f"Gelöschte und bearbeitete Nachrichten in {channel.mention} werden nicht mehr geloggt. "
+                "Mit `.unlog` wieder einschalten.",
+                delete_after=UNLOG_REPLY_SECONDS,
             )
 
     @commands.Cog.listener()
@@ -160,7 +220,7 @@ class LoggingCog(commands.Cog):
         if not _is_tracked(member.guild):
             return
         embed = discord.Embed(
-            title="📥 Mitglied beigetreten",
+            title="Mitglied beigetreten",
             color=EMBED_COLOR,
             timestamp=datetime.now(timezone.utc),
         )
@@ -197,7 +257,7 @@ class LoggingCog(commands.Cog):
 
         if kicked_by:
             embed = discord.Embed(
-                title="👢 Mitglied gekickt",
+                title="Mitglied gekickt",
                 color=EMBED_COLOR,
                 timestamp=datetime.now(timezone.utc),
             )
@@ -207,7 +267,7 @@ class LoggingCog(commands.Cog):
             await self._send(cfg.MOD_LOG_CHANNEL_ID, embed)
         else:
             embed = discord.Embed(
-                title="📤 Mitglied verlassen",
+                title="Mitglied verlassen",
                 color=EMBED_COLOR,
                 timestamp=datetime.now(timezone.utc),
             )
@@ -216,6 +276,47 @@ class LoggingCog(commands.Cog):
             if joined:
                 embed.add_field(name="Server beigetreten am", value=f"{joined:%Y-%m-%d %H:%M UTC}", inline=False)
             await self._send(cfg.MEMBER_LOG_CHANNEL_ID, embed)
+
+    # -----------------------------------------------------------------
+    # ROLLEN: vergeben / entfernt
+    # -----------------------------------------------------------------
+    @commands.Cog.listener()
+    async def on_member_update(self, before: discord.Member, after: discord.Member) -> None:
+        if not cfg.ROLE_LOG_CHANNEL_ID or not _is_tracked(after.guild):
+            return
+        before_roles = set(before.roles)
+        after_roles = set(after.roles)
+        added = sorted(after_roles - before_roles, reverse=True)
+        removed = sorted(before_roles - after_roles, reverse=True)
+        if not added and not removed:
+            return  # z. B. nur Nickname oder Avatar geändert
+
+        changed_ids = {r.id for r in added} | {r.id for r in removed}
+        changed_by, reason = await self._find_role_update_author(after, changed_ids)
+        view = _role_update_view(after, added, removed, changed_by, reason)
+        await self._send(cfg.ROLE_LOG_CHANNEL_ID, view=view)
+
+    async def _find_role_update_author(
+        self, member: discord.Member, changed_ids: set[int]
+    ) -> tuple[discord.abc.User | None, str | None]:
+        """Sucht im Audit-Log, wer die Rollen geändert hat. Gibt (Nutzer, Grund) oder (None, None) zurück."""
+        if not member.guild.me.guild_permissions.view_audit_log:
+            return None, None
+        # Kurze Verzögerung, damit der Audit-Log-Eintrag sicher existiert
+        await asyncio.sleep(1.0)
+        try:
+            async for entry in member.guild.audit_logs(limit=5, action=discord.AuditLogAction.member_role_update):
+                if not entry.target or entry.target.id != member.id:
+                    continue
+                if (datetime.now(timezone.utc) - entry.created_at).total_seconds() > 10:
+                    continue
+                entry_ids = {r.id for r in getattr(entry.before, "roles", [])}
+                entry_ids |= {r.id for r in getattr(entry.after, "roles", [])}
+                if entry_ids & changed_ids:
+                    return entry.user, entry.reason
+        except discord.HTTPException:
+            pass
+        return None, None
 
     # -----------------------------------------------------------------
     # MODERATION: Ban / Unban
@@ -237,7 +338,7 @@ class LoggingCog(commands.Cog):
                 pass
 
         embed = discord.Embed(
-            title="🔨 Mitglied gebannt",
+            title="Mitglied gebannt",
             color=EMBED_COLOR,
             timestamp=datetime.now(timezone.utc),
         )
@@ -262,7 +363,7 @@ class LoggingCog(commands.Cog):
                 pass
 
         embed = discord.Embed(
-            title="🔓 Bann aufgehoben",
+            title="Bann aufgehoben",
             color=EMBED_COLOR,
             timestamp=datetime.now(timezone.utc),
         )

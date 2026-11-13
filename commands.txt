@@ -58,6 +58,7 @@ SERVER-LOG
 .unlog                    Gelöschte und bearbeitete Nachrichten im aktuellen          Administrator
                           Kanal (inkl. Threads) werden nicht mehr geloggt.
                           Nochmal .unlog schaltet das Log wieder ein.
+                          Der Befehl wird gelöscht, die Antwort verschwindet nach 5 s.
 
 SONSTIGES
 ---------

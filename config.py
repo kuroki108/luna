@@ -19,18 +19,18 @@ APPLICATION_STAFF_ROLE_ID: int = 1527446804533215334
 # Ticket-System
 # -------------------------------------------------------
 
-SUPPORT_CATEGORY_ID: int = 1540834808723148820       # Kategorie für Support-Tickets
-REPORT_CATEGORY_ID: int = 1540834871163748384          # Kategorie für Report-Tickets
-ADMIN_CATEGORY_ID: int = 1540834743350722620         # Kategorie für Admin-Tickets
-APPLICATION_CATEGORY_ID: int = 1552431927620010035   # Kategorie für Bewerbungs-Tickets
+SUPPORT_CATEGORY_ID: int = 1540834808723148820          # Kategorie für Support-Tickets
+REPORT_CATEGORY_ID: int = 1540834871163748384           # Kategorie für Report-Tickets
+ADMIN_CATEGORY_ID: int = 1540834743350722620            # Kategorie für Admin-Tickets
+APPLICATION_CATEGORY_ID: int = 1552431927620010035      # Kategorie für Bewerbungs-Tickets
 
 # Entbannungsserver (0 = nicht gesetzt)
-UNBAN_CATEGORY_ID: int = 1547387694919712809              # Kategorie für Entbannungs-Tickets
+UNBAN_CATEGORY_ID: int = 1547387694919712809                # Kategorie für Entbannungs-Tickets
 UNBAN_STAFF_ROLE_ID: int = 1547386930860396674              # Rolle, die Entbannungs-Tickets bearbeitet
 UNBAN_TRANSCRIPT_LOG_CHANNEL_ID: int = 1547390291919634443  # Log-Kanal auf dem Entbannungsserver (0 = TRANSCRIPT_LOG_CHANNEL_ID)
 
 # Jail-Support (0 = nicht gesetzt)
-JAIL_CATEGORY_ID: int = 1555967931630751815                                 # Kategorie für Jail-Tickets (0 = ohne Kategorie)
+JAIL_CATEGORY_ID: int = 1555967931630751815                # Kategorie für Jail-Tickets (0 = ohne Kategorie)
 JAIL_STAFF_ROLE_ID: int = SUPPORT_STAFF_ROLE_ID            # Rolle, die Jail-Tickets bearbeitet
 
 TRANSCRIPT_LOG_CHANNEL_ID: int = 1518365223310856232
@@ -152,12 +152,14 @@ INVITE_LOG_CHANNEL_ID: int = 1509590686209540109
 
 # =======================================================
 # SERVER-LOG (server_log/)
-# Für "Von" bei Kick/Bann/Entbannung braucht der Bot die Berechtigung "Audit-Log anzeigen".
+# Für "Von" bei Kick/Bann/Entbannung/Rollenänderung braucht der Bot die Berechtigung "Audit-Log anzeigen".
 # =======================================================
 
-MESSAGE_LOG_CHANNEL_ID: int = 1509590686012539030  # Gelöschte und bearbeitete Nachrichten (0 = aus)
-MEMBER_LOG_CHANNEL_ID: int = 1509590686209540107   # Beitritte und Austritte (0 = aus)
-MOD_LOG_CHANNEL_ID: int = 1509590686012539027      # Kicks, Banns und Entbannungen (0 = aus)
+MESSAGE_LOG_CHANNEL_ID: int = 1509590686012539030  # Gelöschte und bearbeitete Nachrichten
+MEMBER_LOG_CHANNEL_ID: int = 1509590686209540107   # Beitritte und Austritte 
+MOD_LOG_CHANNEL_ID: int = 1509590686012539027      # Kicks, Banns und Entbannungen 
+ROLE_LOG_CHANNEL_ID: int = 1509590686012539029     # Rollen vergeben und entfernt
+ROLE_LOG_EMOJI: str = "<:a_lunaRpalace:1556771437765992539>"  # Emoji vor der Überschrift im Rollen-Log
 
 # Speichert die per `.unlog` ausgenommenen Kanäle. Standard: <Projekt-Root>/data/server_log.sqlite3
 SERVER_LOG_DB_PATH = Path(__file__).resolve().parent / "data" / "server_log.sqlite3"
