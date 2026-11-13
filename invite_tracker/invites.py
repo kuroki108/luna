@@ -250,7 +250,7 @@ def _format_invite_source(join_type: str, inviter_id: int | None, invite_code: s
         case JoinType.BOT:
             return "Bot – per OAuth2 hinzugefügt"
         case _:
-            return "❔ Unbekannt – die Einladung konnte nicht eindeutig ermittelt werden"
+            return "Unbekannt – die Einladung konnte nicht eindeutig ermittelt werden"
 
 
 def _join_log_embed(
@@ -529,13 +529,14 @@ class InviteTracker(commands.Cog):
         if result.snapshot is not None:
             await self._persist_snapshot(member.guild.id, result.snapshot)
 
+        # DEBUG statt INFO: Beitritte sollen nicht im Terminal erscheinen (nur im Invite-Log-Kanal).
         if result.join_type is JoinType.UNKNOWN:
-            log.info("%s ist %s beigetreten – Invite unbekannt (%s)",
-                     member, member.guild.id, result.reason)
+            log.debug("%s ist %s beigetreten – Invite unbekannt (%s)",
+                      member, member.guild.id, result.reason)
         else:
-            log.info("%s ist %s beigetreten – %s, Code=%s, Inviter=%s",
-                     member, member.guild.id, result.join_type, result.invite_code,
-                     result.inviter_id)
+            log.debug("%s ist %s beigetreten – %s, Code=%s, Inviter=%s",
+                      member, member.guild.id, result.join_type, result.invite_code,
+                      result.inviter_id)
 
         await self._send_join_log(member, result)
 
@@ -552,7 +553,7 @@ class InviteTracker(commands.Cog):
 
     def _tracking_warning(self, guild: discord.Guild) -> str | None:
         if guild.id in self._untracked:
-            return "⚠️ Tracking inaktiv: Dem Bot fehlt die Berechtigung „Server verwalten“."
+            return "Tracking inaktiv: Dem Bot fehlt die Berechtigung „Server verwalten“."
         return None
 
     @commands.command(name=cfg.COMMAND_INVITES, usage="[nutzer]")
@@ -564,9 +565,9 @@ class InviteTracker(commands.Cog):
 
         embed = discord.Embed(title=f"Invites von {target.display_name}", color=EMBED_COLOR)
         embed.set_thumbnail(url=target.display_avatar.url)
-        embed.add_field(name="✅ Aktiv", value=str(stats.active))
-        embed.add_field(name="🚪 Verlassen", value=str(stats.left))
-        embed.add_field(name="📊 Gesamt", value=str(stats.total))
+        embed.add_field(name="Aktiv", value=str(stats.active))
+        embed.add_field(name="Verlassen", value=str(stats.left))
+        embed.add_field(name="Gesamt", value=str(stats.total))
 
         links = sorted(
             (inv for inv in self.cache.get_invites(guild.id) if inv.inviter_id == target.id),
@@ -580,7 +581,7 @@ class InviteTracker(commands.Cog):
             ]
             if len(links) > MAX_LISTED_LINKS:
                 lines.append(f"… und {len(links) - MAX_LISTED_LINKS} weitere")
-            embed.add_field(name="🔗 Aktive Links", value="\n".join(lines), inline=False)
+            embed.add_field(name="Aktive Links", value="\n".join(lines), inline=False)
 
         if warning := self._tracking_warning(guild):
             embed.set_footer(text=warning)
@@ -593,11 +594,10 @@ class InviteTracker(commands.Cog):
         top = await self.db.get_leaderboard(guild.id, cfg.INVITE_LEADERBOARD_SIZE)
         unknown = await self.db.count_unknown_joins(guild.id)
 
-        embed = discord.Embed(title=f"🏆 Invite-Leaderboard – {guild.name}", color=EMBED_COLOR)
+        embed = discord.Embed(title=f"Invite-Leaderboard – {guild.name}", color=EMBED_COLOR)
         if top:
-            medals = {1: "🥇", 2: "🥈", 3: "🥉"}
             embed.description = "\n".join(
-                f"{medals.get(rank, f'`#{rank}`')} <@{s.inviter_id}> – **{s.active}** "
+                f"`#{rank}` <@{s.inviter_id}> – **{s.active}** "
                 f"Invite{'s' if s.active != 1 else ''} ({s.left} verlassen, {s.total} gesamt)"
                 for rank, s in enumerate(top, start=1)
             )
@@ -649,7 +649,7 @@ class InviteTracker(commands.Cog):
             text = "Das darfst du hier nicht."
         else:
             log.error("Fehler in .%s", ctx.command.qualified_name if ctx.command else "?", exc_info=error)
-            text = "❌ Beim Ausführen des Befehls ist ein Fehler aufgetreten."
+            text = "Beim Ausführen des Befehls ist ein Fehler aufgetreten."
         try:
             await _reply(ctx, text)
         except discord.HTTPException:
