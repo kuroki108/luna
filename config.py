@@ -34,6 +34,7 @@ JAIL_CATEGORY_ID: int = 1555967931630751815                                 # Ka
 JAIL_STAFF_ROLE_ID: int = SUPPORT_STAFF_ROLE_ID            # Rolle, die Jail-Tickets bearbeitet
 
 TRANSCRIPT_LOG_CHANNEL_ID: int = 1518365223310856232
+CHANNEL_TRANSCRIPT_LOG_CHANNEL_ID: int = 1509590685689446467
 
 MAX_OPEN_SUPPORT_TICKETS_PER_USER: int = 3
 MAX_OPEN_APPLICATION_TICKETS_PER_USER: int = 1
@@ -157,3 +158,6 @@ INVITE_LOG_CHANNEL_ID: int = 1509590686209540109
 MESSAGE_LOG_CHANNEL_ID: int = 1509590686012539030  # Gelöschte und bearbeitete Nachrichten (0 = aus)
 MEMBER_LOG_CHANNEL_ID: int = 1509590686209540107   # Beitritte und Austritte (0 = aus)
 MOD_LOG_CHANNEL_ID: int = 1509590686012539027      # Kicks, Banns und Entbannungen (0 = aus)
+
+# Speichert die per `.unlog` ausgenommenen Kanäle. Standard: <Projekt-Root>/data/server_log.sqlite3
+SERVER_LOG_DB_PATH = Path(__file__).resolve().parent / "data" / "server_log.sqlite3"

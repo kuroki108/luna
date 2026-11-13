@@ -9,6 +9,8 @@ from discord.ext import commands
 
 import config as cfg
 
+from .database import ServerLogDatabase
+
 log = logging.getLogger(__name__)
 
 EMBED_COLOR = cfg.EMBED_COLOR
@@ -36,14 +38,29 @@ def _validate_config() -> None:
 class LoggingCog(commands.Cog):
     """Server-Log: gelöschte/bearbeitete Nachrichten, Beitritte/Austritte, Kicks, Banns."""
 
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: commands.Bot, db: ServerLogDatabase) -> None:
         self.bot = bot
+        self.db = db
         self._warned_channels: set[int] = set()
+        # Kanäle, deren Nachrichten per `.unlog` nicht geloggt werden.
+        self._unlogged: set[int] = set()
 
     async def cog_load(self) -> None:
+        await self.db.connect()
+        self._unlogged = await self.db.get_unlogged_channels(cfg.GUILD_ID)
         for name in LOG_CHANNEL_SETTINGS:
             if not getattr(cfg, name):
                 log.info("%s ist 0 – dieser Log ist aus.", name)
+
+    async def cog_unload(self) -> None:
+        await self.db.close()
+
+    def _is_unlogged(self, channel: discord.abc.GuildChannel | discord.Thread) -> bool:
+        """True, wenn der Kanal (bei Threads auch der Elternkanal) per `.unlog` ausgenommen ist."""
+        if channel.id in self._unlogged:
+            return True
+        parent_id = getattr(channel, "parent_id", None)
+        return parent_id is not None and parent_id in self._unlogged
 
     async def _send(self, channel_id: int, embed: discord.Embed) -> None:
         if not channel_id:
@@ -64,7 +81,7 @@ class LoggingCog(commands.Cog):
     # -----------------------------------------------------------------
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message) -> None:
-        if not _is_tracked(message.guild) or message.author.bot:
+        if not _is_tracked(message.guild) or message.author.bot or self._is_unlogged(message.channel):
             return
 
         embed = discord.Embed(
@@ -86,7 +103,7 @@ class LoggingCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message) -> None:
-        if not _is_tracked(before.guild) or before.author.bot:
+        if not _is_tracked(before.guild) or before.author.bot or self._is_unlogged(before.channel):
             return
         if before.content == after.content:
             # Nur echte Text-Aenderungen loggen (kein Embed-Unfurl-Trigger etc.)
@@ -104,6 +121,36 @@ class LoggingCog(commands.Cog):
         embed.add_field(name="Sprung", value=f"[Zur Nachricht]({after.jump_url})", inline=False)
         embed.set_footer(text=f"Message-ID: {before.id}")
         await self._send(cfg.MESSAGE_LOG_CHANNEL_ID, embed)
+
+    # -----------------------------------------------------------------
+    # COMMAND: .unlog
+    # -----------------------------------------------------------------
+    @commands.command(name="unlog")
+    @commands.has_guild_permissions(administrator=True)
+    async def unlog_command(self, ctx: commands.Context) -> None:
+        """Schaltet das Nachrichten-Log für den aktuellen Kanal aus bzw. wieder ein."""
+        if not _is_tracked(ctx.guild):
+            await ctx.send("Der Server-Log läuft nur auf dem Hauptserver.", delete_after=5)
+            return
+
+        channel = ctx.channel
+        if channel.id in self._unlogged:
+            await self.db.remove_unlogged_channel(channel.id)
+            self._unlogged.discard(channel.id)
+            await ctx.send(f"🔔 {channel.mention} wird wieder geloggt.")
+        else:
+            await self.db.add_unlogged_channel(ctx.guild.id, channel.id, ctx.author.id)
+            self._unlogged.add(channel.id)
+            await ctx.send(
+                f"🔕 Gelöschte und bearbeitete Nachrichten in {channel.mention} werden nicht mehr geloggt. "
+                "Mit `.unlog` wieder einschalten."
+            )
+
+    @commands.Cog.listener()
+    async def on_guild_channel_delete(self, channel: discord.abc.GuildChannel) -> None:
+        if channel.id in self._unlogged:
+            await self.db.remove_unlogged_channel(channel.id)
+            self._unlogged.discard(channel.id)
 
     # -----------------------------------------------------------------
     # MEMBER: Join / Leave / Kick
@@ -227,4 +274,4 @@ class LoggingCog(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     _validate_config()
-    await bot.add_cog(LoggingCog(bot))
+    await bot.add_cog(LoggingCog(bot, ServerLogDatabase(cfg.SERVER_LOG_DB_PATH)))
