@@ -3,7 +3,7 @@ LUNA – ALLE BOT-COMMANDS
 
 Prefix: .    (es gibt keine Slash-Commands)
 <...> = Pflichtangabe, [...] = optional
-Level- und Invite-Commands funktionieren nur auf dem Hauptserver (GUILD_ID in config.py),
+Level-, Invite- und Server-Log-Commands funktionieren nur auf dem Hauptserver (GUILD_ID in config.py),
 Ticket-Commands auch auf dem Entbannungsserver.
 
 
@@ -19,7 +19,8 @@ TICKET-SYSTEM
 .delete                   Löscht das aktuelle Ticket (mit Bestätigung);               Team des Ticket-Typs
                           vorher wird ein Transcript in den Log-Kanal gesendet.
 .transcript               Erstellt ein Transcript des aktuellen Kanals und            Admin
-                          sendet es in den Transcript-Log-Kanal.
+                          sendet es in CHANNEL_TRANSCRIPT_LOG_CHANNEL_ID
+                          (0 = Transcript-Log-Kanal).
 
 
 LEVEL-SYSTEM
@@ -50,6 +51,13 @@ INVITE-TRACKER
 .invitedby [@Nutzer]      Zeigt, wer den Nutzer eingeladen hat                        alle
                           (ohne Angabe: dich selbst).
 
+
+SERVER-LOG
+----------
+
+.unlog                    Gelöschte und bearbeitete Nachrichten im aktuellen          Administrator
+                          Kanal (inkl. Threads) werden nicht mehr geloggt.
+                          Nochmal .unlog schaltet das Log wieder ein.
 
 SONSTIGES
 ---------

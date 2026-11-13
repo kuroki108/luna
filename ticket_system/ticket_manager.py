@@ -132,13 +132,15 @@ async def generate_transcript_file(channel: discord.TextChannel) -> discord.File
 async def archive_channel_transcript(
     channel: discord.TextChannel, requester: discord.Member
 ) -> Optional[discord.abc.Messageable]:
-    """Erstellt ein Transcript eines beliebigen Kanals und sendet es in den Transcript-Log-Kanal.
+    """Erstellt ein Transcript eines beliebigen Kanals und sendet es in den Kanal-Transcript-Log-Kanal.
 
+    Verwendet CHANNEL_TRANSCRIPT_LOG_CHANNEL_ID, bei 0 TRANSCRIPT_LOG_CHANNEL_ID.
     Gibt den Log-Kanal zurück oder None, wenn er nicht gefunden wurde.
     """
-    log_channel = requester.guild.get_channel(config.TRANSCRIPT_LOG_CHANNEL_ID) if config.TRANSCRIPT_LOG_CHANNEL_ID else None
+    log_channel_id = config.CHANNEL_TRANSCRIPT_LOG_CHANNEL_ID or config.TRANSCRIPT_LOG_CHANNEL_ID
+    log_channel = requester.guild.get_channel(log_channel_id) if log_channel_id else None
     if not log_channel:
-        log.error("Transcript-Log-Kanal %s wurde nicht gefunden.", config.TRANSCRIPT_LOG_CHANNEL_ID)
+        log.error("Kanal-Transcript-Log-Kanal %s wurde nicht gefunden.", log_channel_id)
         return None
 
     file = await generate_transcript_file(channel)
