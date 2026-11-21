@@ -163,3 +163,7 @@ ROLE_LOG_EMOJI: str = "<:a_lunaRpalace:1556771437765992539>"  # Emoji vor der Ü
 
 # Speichert die per `.unlog` ausgenommenen Kanäle. Standard: <Projekt-Root>/data/server_log.sqlite3
 SERVER_LOG_DB_PATH = Path(__file__).resolve().parent / "data" / "server_log.sqlite3"
+
+
+VOICE_PRESENCE_CHANNEL_ID: int = 0     # ID des Sprachkanals (0 = aus)
+

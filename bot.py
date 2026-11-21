@@ -48,6 +48,8 @@ class LunaBot(commands.Bot):
         log.info("Invite-Tracker geladen.")
         await self.load_extension("server_log.log")
         log.info("Server-Log geladen.")
+        await self.load_extension("voice_presence.voice")
+        log.info("Voice-Presence geladen.")
 
         if config.GUILD_ID:
             guild_obj = discord.Object(id=config.GUILD_ID)
