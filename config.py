@@ -165,5 +165,5 @@ ROLE_LOG_EMOJI: str = "<:a_lunaRpalace:1556771437765992539>"  # Emoji vor der Ü
 SERVER_LOG_DB_PATH = Path(__file__).resolve().parent / "data" / "server_log.sqlite3"
 
 
-VOICE_PRESENCE_CHANNEL_ID: int = 0     # ID des Sprachkanals (0 = aus)
+VOICE_PRESENCE_CHANNEL_ID: int = 1554167406568669236     # ID des Sprachkanals (0 = aus)
 
