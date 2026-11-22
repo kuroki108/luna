@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 import config as cfg
 from .formatting import format_number
+from .text_render import clean_text, draw_text, text_width
 
 ASSETS = Path(__file__).parent / "assets"
 TEMPLATE_PATH = ASSETS / "rankcard_template.png"
@@ -95,14 +96,17 @@ def font_for_cap_height(cap_height: int) -> ImageFont.FreeTypeFont:
 def fit_text(
     draw: ImageDraw.ImageDraw, text: str, cap_height: int, max_width: float
 ) -> tuple[str, ImageFont.FreeTypeFont]:
-    """Text in Versalien; bei Überlänge erst verkleinern (bis 70 %), dann kürzen."""
-    text = text.upper()
+    """Text in Versalien; bei Überlänge erst verkleinern (bis 70 %), dann kürzen.
+
+    Das Ergebnis mit text_render.draw_text zeichnen, damit Sonderzeichen keine Kästchen werden.
+    """
+    text = clean_text(text, font_for_cap_height(cap_height)).upper()
     for cap in range(cap_height, int(cap_height * 0.7) - 1, -2):
         font = font_for_cap_height(cap)
-        if draw.textlength(text, font=font) <= max_width:
+        if text_width(draw, text, font) <= max_width:
             return text, font
     font = font_for_cap_height(int(cap_height * 0.7))
-    while text and draw.textlength(text + "…", font=font) > max_width:
+    while text and text_width(draw, text + "…", font) > max_width:
         text = text[:-1]
     return text.rstrip() + "…", font
 
@@ -219,7 +223,7 @@ def render_rank_card(data: RankCardData) -> io.BytesIO:
     name_max = min(NAME_MAX_WIDTH, int(level_left - NAME_LEVEL_GAP - TEXT_LEFT))
 
     name, name_font = fit_text(draw, data.username, NAME_STYLE[1], name_max)
-    draw.text((TEXT_LEFT, NAME_STYLE[0]), name, font=name_font, fill=COLOR_MAIN, anchor="ls")
+    draw_text(draw, (TEXT_LEFT, NAME_STYLE[0]), name, name_font, COLOR_MAIN, "ls")
     draw.text((TEXT_RIGHT, LEVEL_STYLE[0]), level_text, font=level_font, fill=COLOR_MAIN, anchor="rs")
     draw.text((TEXT_RIGHT, RANK_STYLE[0]), f"RANG #{data.rank}",
               font=font_for_cap_height(RANK_STYLE[1]), fill=COLOR_SUB, anchor="rs")

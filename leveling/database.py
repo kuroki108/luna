@@ -156,7 +156,15 @@ class LevelingDatabase:
             row = await cur.fetchone()
         return row[0] + 1
 
-    async def get_leaderboard(self, limit: int) -> list[tuple[int, int]]:
+    async def get_user_ids_above(self, total_xp: int) -> list[int]:
+        """Alle user_ids mit mehr als total_xp XP (für einen Rang nur unter aktuellen Mitgliedern)."""
+        async with self.conn.execute(
+            "SELECT user_id FROM users WHERE total_xp > ?", (total_xp,)
+        ) as cur:
+            return [r[0] for r in await cur.fetchall()]
+
+    async def get_leaderboard(self, limit: int | None = None) -> list[tuple[int, int]]:
+        """(user_id, total_xp) absteigend nach XP; limit=None liefert alle Einträge."""
         async with self.conn.execute(
             """
             SELECT user_id, total_xp FROM users
@@ -164,7 +172,7 @@ class LevelingDatabase:
             ORDER BY total_xp DESC, user_id ASC
             LIMIT ?
             """,
-            (limit,),
+            (-1 if limit is None else limit,),  # LIMIT -1 = unbegrenzt
         ) as cur:
             return [(r[0], r[1]) for r in await cur.fetchall()]
 

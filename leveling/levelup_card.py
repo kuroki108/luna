@@ -8,6 +8,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 from .rankcard import circle_avatar, fit_text, font_for_cap_height, to_png
+from .text_render import draw_text
 
 TEMPLATE_PATH = Path(__file__).parent / "assets" / "levelup_template.png"
 
@@ -100,9 +101,8 @@ def render_levelup_card(data: LevelupCardData) -> io.BytesIO:
 
     # 2) Name (Anker 'ms' = Mitte/Grundlinie)
     baseline, cap, max_width = NAME_STYLE
-    username = printable(data.username, font_for_cap_height(cap)) or "?"
-    name, name_font = fit_text(draw, username, cap, max_width)
-    draw.text((TEXT_CENTER_X, baseline), name, font=name_font, fill=COLOR_TEXT, anchor="ms")
+    name, name_font = fit_text(draw, data.username or "?", cap, max_width)
+    draw_text(draw, (TEXT_CENTER_X, baseline), name or "?", name_font, COLOR_TEXT, "ms")
 
     # 3) Rollenname im Schild (gesperrt)
     baseline, cap, max_width = ROLE_STYLE

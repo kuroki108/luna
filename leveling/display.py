@@ -58,7 +58,9 @@ class DisplayMixin:
     async def _rank_file(self, member: discord.Member) -> discord.File:
         """Rangkarte eines Mitglieds als discord.File."""
         total = await self.db.get_total_xp(member.id)
-        rank = await self.db.get_rank(member.id)
+        # Rang nur unter aktuellen Mitgliedern zählen (passend zum Leaderboard)
+        above = await self.db.get_user_ids_above(total)
+        rank = 1 + sum(1 for user_id in above if member.guild.get_member(user_id) is not None)
         level, xp_in_level = level_from_total_xp(total)
         data = RankCardData(
             username=member.display_name,
@@ -75,12 +77,21 @@ class DisplayMixin:
 
     async def _leaderboard_file(self, guild: discord.Guild) -> discord.File:
         """Leaderboard (Top LEADERBOARD_SIZE) als discord.File."""
-        rows = await self.db.get_leaderboard(cfg.LEADERBOARD_SIZE)
+        # Nur aktuelle Mitglieder: Ausgetretene werden übersprungen, die nächsten rücken nach
+        rows: list[tuple[int, int]] = []
+        users: list[discord.Member] = []
+        for user_id, total in await self.db.get_leaderboard():
+            member = guild.get_member(user_id)
+            if member is None:
+                continue
+            rows.append((user_id, total))
+            users.append(member)
+            if len(rows) >= cfg.LEADERBOARD_SIZE:
+                break
 
-        # Ausgetretene Mitglieder: Name/Avatar aus dem User-Cache, sonst Platzhalter
-        users = [guild.get_member(user_id) or self.bot.get_user(user_id) for user_id, _ in rows]
+
         avatars = await asyncio.gather(*(
-            fetch_avatar(user, 256 if i < 3 else 128) for i, user in enumerate(users)
+            fetch_avatar(user, 512 if i < 3 else 256) for i, user in enumerate(users)
         ))
 
         entries = []
