@@ -50,6 +50,8 @@ class LunaBot(commands.Bot):
         log.info("Server-Log geladen.")
         await self.load_extension("voice_presence.voice")
         log.info("Voice-Presence geladen.")
+        await self.load_extension("stats.cog")
+        log.info("Stats geladen.")
 
         if config.GUILD_ID:
             guild_obj = discord.Object(id=config.GUILD_ID)
@@ -74,7 +76,7 @@ class LunaBot(commands.Bot):
 
     async def on_command_error(self, ctx, error):
         if ctx.cog and ctx.cog.has_error_handler():
-            return  # Cog antwortet selbst (Leveling, Invite-Tracker)
+            return  # Cog antwortet selbst (Leveling, Invite-Tracker, Stats)
         if isinstance(error, commands.CommandNotFound):
             return
         if isinstance(error, (commands.MissingAnyRole, commands.MissingPermissions, commands.MissingRole)):

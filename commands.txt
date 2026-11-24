@@ -3,7 +3,7 @@ LUNA – ALLE BOT-COMMANDS
 
 Prefix: .    (es gibt keine Slash-Commands)
 <...> = Pflichtangabe, [...] = optional
-Level-, Invite- und Server-Log-Commands funktionieren nur auf dem Hauptserver (GUILD_ID in config.py),
+Level-, Invite-, Server-Log- und Stats-Commands funktionieren nur auf dem Hauptserver (GUILD_ID in config.py),
 Ticket-Commands auch auf dem Entbannungsserver.
 
 
@@ -60,6 +60,15 @@ SERVER-LOG
                           Nochmal .unlog schaltet das Log wieder ein.
                           Der Befehl wird gelöscht, die Antwort verschwindet nach 5 s.
 
+
+STATS
+-----
+
+.stats [@Mitglied]        Zeigt die Stats-Karte: Nachrichten und Voice-Stunden        alle (5 s Cooldown)
+                          (1/7/14 Tage) und Server-Ränge (ohne Angabe: deine eigene).
+.stats all                Zeigt die Server-Karte: Summen (1/7/30 Tage) und            alle (5 s Cooldown)
+                          Top-Listen für Nachrichten und Voice (14 Tage).
+
 SONSTIGES
 ---------
 
@@ -73,3 +82,4 @@ Server-Log      Gelöschte/bearbeitete Nachrichten, Beitritte/Austritte, Kicks, 
                 Kanäle: MESSAGE_LOG_CHANNEL_ID, MEMBER_LOG_CHANNEL_ID, MOD_LOG_CHANNEL_ID (0 = aus).
 Invite-Log      Meldung bei jedem Beitritt, wer eingeladen hat: INVITE_LOG_CHANNEL_ID (0 = aus).
 Level-System    Text- und Voice-XP, Level-Rollen, Levelup-Karten in LEVELUP_CHANNEL_ID.
+Stats           Zählt Nachrichten und Voice-Zeit (nur mit mind. 2 aktiven, nicht stummen Menschen).

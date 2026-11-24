@@ -375,6 +375,6 @@ def render_leaderboard(data: LeaderboardData) -> io.BytesIO:
         y += ROW_H + ROW_GAP
     if not data.entries:
         draw.text((WIDTH / 2, S(y + EMPTY_H / 2)), "Noch hat niemand XP gesammelt.",
-                  font=font_for_cap_height(S(30)), fill=COLOR_SUB, anchor="mm")
+                    font=font_for_cap_height(S(30)), fill=COLOR_SUB, anchor="mm")
 
     return to_png(canvas)

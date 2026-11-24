@@ -167,3 +167,40 @@ SERVER_LOG_DB_PATH = Path(__file__).resolve().parent / "data" / "server_log.sqli
 
 VOICE_PRESENCE_CHANNEL_ID: int = 1554167406568669236     # ID des Sprachkanals (0 = aus)
 
+
+# =======================================================
+# STATS (stats/)
+# Nachrichten- und Voice-Statistiken als Bildkarte. Läuft nur auf GUILD_ID.
+# Design der Karten (Farben, Texte) steht in stats/design.py.
+# =======================================================
+
+# Standard: <Projekt-Root>/data/stats.sqlite3
+STATS_DB_PATH = Path(__file__).resolve().parent / "data" / "stats.sqlite3"
+
+COMMAND_STATS = "stats"      # .stats [@Mitglied] – eigene/fremde Karte, .stats all – Server-Karte
+STATS_COOLDOWN_SECONDS = 5   # Pro Nutzer zwischen `.stats`-Aufrufen (Rendern kostet CPU; 0 = aus)
+
+# Text-Kanäle, in denen Nachrichten NICHT gezählt werden (gilt auch für Threads und Foren-Posts darin).
+STATS_IGNORED_TEXT_CHANNEL_IDS: list[int] = [1525576923517026454, 1509590687010783239, 1528773508899799060, 1518300447486513283, 1509590687010783233, 1532084834451853452, 1509590686012539021, 1509590685844770957, 1509590685689446467, 1509590685689446468]
+# Voice-Kanäle, in denen KEINE Zeit gezählt wird. Der AFK-Kanal des Servers wird automatisch ignoriert.
+STATS_IGNORED_VOICE_CHANNEL_IDS: list[int] = [1509590686012539025, 1554167406568669236, 1556394035931910154, 1554167579185119385]
+
+# Mindestanzahl aktiver Menschen (keine Bots) im Voice-Kanal. Taube oder stummgeschaltete
+# Mitglieder (selbst oder vom Server) sammeln nie Voice-Zeit und zählen hier nicht mit.
+STATS_VOICE_MIN_MEMBERS = 2
+
+STATS_VOICE_TICK_SECONDS = 60       # Wie oft Voice-Zeit gutgeschrieben wird
+STATS_VOICE_MAX_DELTA = 120         # Obergrenze pro Tick in Sekunden (schützt vor Zeitsprüngen nach Downtime)
+STATS_MESSAGE_FLUSH_SECONDS = 30    # Wie oft gezählte Nachrichten in die Datenbank geschrieben werden
+STATS_RETENTION_DAYS = 60           # Ältere Einträge werden einmal täglich gelöscht (≥ längster Zeitraum unten)
+
+# Anzeige (Zeiträume in Tagen; die Karten haben Platz für genau 3 Zeiträume)
+STATS_USER_LOOKBACK: tuple[int, int, int] = (1, 7, 14)     # Zeiträume auf der User-Karte
+STATS_SERVER_LOOKBACK: tuple[int, int, int] = (1, 7, 30)   # Zeiträume auf der Server-Karte
+STATS_RANK_DAYS = 14         # Zeitraum für die Server-Ränge auf der User-Karte
+STATS_HIGHLIGHT_DAYS = 14    # Großes "Zeitraum"-Feld und Top-Listen auf der Server-Karte
+STATS_TOP_N = 5              # Einträge in den Top-Listen (1–10)
+
+STATS_TIMEZONE = "Europe/Berlin"
+STATS_DECIMAL_SEP = "."      # "," für deutsche Schreibweise (1,96k)
+

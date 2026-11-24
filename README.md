@@ -1,6 +1,6 @@
 # Luna
 
-Discord-Bot mit Ticket-System und Level-System (Python, discord.py, SQLite).
+Discord-Bot mit Ticket-System, Level-System und Aktivitäts-Stats (Python, discord.py, SQLite).
 
 ## Aufbau
 
@@ -8,7 +8,8 @@ Discord-Bot mit Ticket-System und Level-System (Python, discord.py, SQLite).
 - `config.py` – einzige Konfiguration (Server-ID, Rollen, Kategorien, Level-Einstellungen)
 - `ticket_system/` – Panels, Tickets, Transcripts
 - `leveling/` – XP, Level-Rollen, Rang-/Levelup-/Leaderboard-Karten, XP-Boost
-- `data/` – SQLite-Datenbanken (`tickets.sqlite3`, `leveling.sqlite3`)
+- `stats/` – Nachrichten- und Voice-Statistiken als Bildkarte (`.stats`)
+- `data/` – SQLite-Datenbanken (`tickets.sqlite3`, `leveling.sqlite3`, `stats.sqlite3`, …)
 - `assets/` – Bilder für die Panels
 
 ## Start
@@ -30,3 +31,4 @@ Im Developer Portal müssen die Intents *Server Members* und *Message Content* a
 | `.adduser @User`, `.delete` | im Ticket-Kanal: Nutzer hinzufügen, Ticket löschen (mit Transcript) |
 | `.rank [Mitglied]`, `.leaderboard` | Rang- und Leaderboard-Karte |
 | `.xp add\|remove`, `.xprise`, `.level-config show` | Level-Verwaltung (Admin) |
+| `.stats [Mitglied]`, `.stats all` | Aktivitäts-Karte für Nutzer bzw. Server |
