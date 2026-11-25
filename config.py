@@ -186,7 +186,7 @@ STATS_IGNORED_TEXT_CHANNEL_IDS: list[int] = [1525576923517026454, 15095906870107
 STATS_IGNORED_VOICE_CHANNEL_IDS: list[int] = [1509590686012539025, 1554167406568669236, 1556394035931910154, 1554167579185119385]
 
 # Mindestanzahl aktiver Menschen (keine Bots) im Voice-Kanal. Taube oder stummgeschaltete
-
+# Mitglieder (selbst oder vom Server) sammeln nie Voice-Zeit und zählen hier nicht mit.
 STATS_VOICE_MIN_MEMBERS = 2
 
 STATS_VOICE_TICK_SECONDS = 60       # Wie oft Voice-Zeit gutgeschrieben wird
